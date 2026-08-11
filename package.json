@@ -6,7 +6,12 @@
   "scripts": {
     "build": "pnpm -r run build",
     "build:ui": "pnpm --filter @madoka520/vue-ui run build",
-    "build:utils": "pnpm --filter @madoka520/vue-utils run build"
+    "build:utils": "pnpm --filter @madoka520/vue-utils run build",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@changesets/cli": "^2.31.1"
+  }
 }

@@ -4,6 +4,10 @@ export { default as MadokaCollapseItem } from './components/MadokaCollapse/Madok
 export { default as MadokaBtn } from './components/button/Index.vue'
 export { default as MadokaDialog } from './components/MadokaDialog.vue'
 export { default as MadokaMask } from './components/MadokaMask.vue'
+export { default as madokaMoveDirective } from './directives/move'
+export { default as madokaResizeDirective } from './directives/resize'
+export { default as madokaSelectDirective } from './directives/select'
+export { default as madokaTypingReplayDirective } from './directives/typingReplay'
 export { message } from './components/message'
 export { useContextMenu } from './components/useContextMenu'
 export { default as useMask } from './components/useMask'
@@ -25,5 +29,7 @@ export type {
 } from './types'
 export type { SelectOption } from './components/Select/types'
 // Codex 新增开始
+export type { MadokaSelectDirectiveOptions } from './directives/select'
+export type { MadokaTypingReplayExposed, MadokaTypingReplayOp } from './directives/typingReplay'
 export type { Variant as MadokaButtonVariant } from './components/button/button'
 // Codex 新增结束
