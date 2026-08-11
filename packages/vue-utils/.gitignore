@@ -1,0 +1,13 @@
+# Codex 新增开始
+node_modules/
+# Codex 新增开始
+.idea/
+# Codex 新增结束
+# 原代码 - Codex 保留
+# dist/
+# Codex 新增开始
+dist/
+# Codex 新增结束
+*.log
+.DS_Store
+# Codex 新增结束

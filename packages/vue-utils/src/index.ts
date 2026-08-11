@@ -1,0 +1,44 @@
+export type MaybeFn<T, Args extends unknown[] = unknown[]> =
+  | T
+  | ((...args: Args) => T)
+
+export const resolveMaybeFn = <T, Args extends unknown[] = unknown[]>(
+  value: MaybeFn<T, Args>,
+  ...args: Args
+): T => {
+  return typeof value === 'function'
+    ? (value as (...args: Args) => T)(...args)
+    : value
+}
+
+export const sleep = (timeout = 0): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, timeout))
+}
+
+export const enumToOptions = <T extends Record<string, string | number>>(value: T) => {
+  return Object.entries(value)
+    .filter(([key]) => Number.isNaN(Number(key)))
+    .map(([label, optionValue]) => ({ label, value: optionValue }))
+}
+
+export const getRGB = (color: string): [number, number, number] | null => {
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext('2d')
+  if (!context) return null
+
+  context.fillStyle = '#000'
+  context.fillStyle = color
+  const computed = context.fillStyle
+  if (
+    computed === '#000000' &&
+    color.toLowerCase() !== 'black' &&
+    !color.startsWith('#000')
+  ) {
+    return null
+  }
+
+  context.fillRect(0, 0, 1, 1)
+  const [red, green, blue] = context.getImageData(0, 0, 1, 1).data
+  return [red, green, blue]
+}

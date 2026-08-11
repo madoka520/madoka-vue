@@ -1,0 +1,22 @@
+{
+  "name": "@madoka-pre/vue-utils",
+  "version": "0.1.0",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "pnpm run build"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.2"
+  }
+}
