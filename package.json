@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r run build",
-    "build:ui": "pnpm --filter @madoka-pre/vue-ui run build",
-    "build:utils": "pnpm --filter @madoka-pre/vue-utils run build"
+    "build:ui": "pnpm --filter @madoka520/vue-ui run build",
+    "build:utils": "pnpm --filter @madoka520/vue-utils run build"
   },
   "devDependencies": {}
 }

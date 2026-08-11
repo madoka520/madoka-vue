@@ -14,7 +14,7 @@
 // Codex 新增开始
 import type { Variant } from './button'
 // Codex 新增结束
-import { getRGB } from '@madoka-pre/vue-utils'
+import { getRGB } from '@madoka520/vue-utils'
 
 const props = withDefaults(
   defineProps<{

@@ -2,5 +2,5 @@ packages:
   - 'packages/*'
 
 onlyBuiltDependencies:
-  - '@madoka-pre/vue-ui'
-  - '@madoka-pre/vue-utils'
+  - '@madoka520/vue-ui'
+  - '@madoka520/vue-utils'

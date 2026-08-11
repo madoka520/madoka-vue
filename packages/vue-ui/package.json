@@ -1,5 +1,5 @@
 {
-  "name": "@madoka-pre/vue-ui",
+  "name": "@madoka520/vue-ui",
   "version": "0.1.0",
   "type": "module",
   "files": [
@@ -25,7 +25,7 @@
   "dependencies": {
     "@vueuse/core": "^11.1.0",
     "lodash": "^4.17.23",
-    "@madoka-pre/vue-utils": "workspace:*"
+    "@madoka520/vue-utils": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
