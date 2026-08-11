@@ -5,6 +5,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "main": "./dist/vue-ui.js",
   "module": "./dist/vue-ui.js",
   "types": "./dist/index.d.ts",

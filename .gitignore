@@ -1,0 +1,15 @@
+# Codex 新增开始
+node_modules/
+dist/
+.idea/
+*.log
+.DS_Store
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Package manager caches
+.pnpm-store/
+# Codex 新增结束
