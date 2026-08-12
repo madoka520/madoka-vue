@@ -1,42 +1,73 @@
 import { reactive, h, watchEffect, render, nextTick } from 'vue'
 
-interface MenuSize {
+// 原代码 - Codex 保留
+// interface MenuSize {
+// Codex 新增开始
+export interface MadokaContextMenuSize {
+// Codex 新增结束
   width?: number
   height?: number
 }
 
-interface MenuItem {
+// 原代码 - Codex 保留
+// interface MenuItem {
+// Codex 新增开始
+export interface MadokaContextMenuItem {
+// Codex 新增结束
   icon?: string
   label: string
   action?: () => void
-  children?: MenuItem[]
+  // 原代码 - Codex 保留
+  // children?: MenuItem[]
+  // Codex 新增开始
+  children?: MadokaContextMenuItem[]
+  // Codex 新增结束
 }
 
-const DEFAULT_SIZE: Required<MenuSize> = { width: 160, height: 30 }
+// 原代码 - Codex 保留
+// const DEFAULT_SIZE: Required<MenuSize> = { width: 160, height: 30 }
+// Codex 新增开始
+const DEFAULT_SIZE: Required<MadokaContextMenuSize> = { width: 160, height: 30 }
+// Codex 新增结束
 
 // 单例状态
 const state = reactive({
   visible: false,
   position: { x: 0, y: 0 },
-  items: [] as MenuItem[],
-  size: { ...DEFAULT_SIZE } as Required<MenuSize>,
+  // 原代码 - Codex 保留
+  // items: [] as MenuItem[],
+  // size: { ...DEFAULT_SIZE } as Required<MenuSize>,
+  // Codex 新增开始
+  items: [] as MadokaContextMenuItem[],
+  size: { ...DEFAULT_SIZE } as Required<MadokaContextMenuSize>,
+  // Codex 新增结束
 })
 
 // 全局唯一容器
-const container = document.createElement('div')
-document.body.appendChild(container)
-const style = document.createElement('style')
-style.innerHTML = `
-  li:hover > ul > li {
-    display: flex !important;
-  }
-`
-document.head.appendChild(style)
+// 原代码 - Codex 保留
+// const container = document.createElement('div')
+// document.body.appendChild(container)
+// const style = document.createElement('style')
+// style.innerHTML = `
+//   li:hover > ul > li {
+//     display: flex !important;
+//   }
+// `
+// document.head.appendChild(style)
+// Codex 新增开始
+let container: HTMLDivElement | null = null
+let style: HTMLStyleElement | null = null
+let initialized = false
+// Codex 新增结束
 const hide = () => {
   state.visible = false
 }
 
-container.addEventListener('mouseover', (e) => {
+// 原代码 - Codex 保留
+// container.addEventListener('mouseover', (e) => {
+// Codex 新增开始
+const handleMouseOver = (e: MouseEvent) => {
+// Codex 新增结束
   const li = (e.target as HTMLElement)?.closest('li')
   if (!li) return
 
@@ -56,9 +87,32 @@ container.addEventListener('mouseover', (e) => {
     subMenu.style.left = 'auto'
     subMenu.style.right = '100%'
   }
-})
+// 原代码 - Codex 保留
+// })
+// Codex 新增开始
+}
+// Codex 新增结束
+
+// Codex 新增开始
+const ensureContextMenuDom = () => {
+  if (initialized || typeof document === 'undefined') return
+  container = document.createElement('div')
+  document.body.appendChild(container)
+  style = document.createElement('style')
+  style.innerHTML = `
+  li:hover > ul > li {
+    display: flex !important;
+  }
+`
+  document.head.appendChild(style)
+  container.addEventListener('mouseover', handleMouseOver)
+  document.addEventListener('click', hide)
+  initialized = true
+}
+// Codex 新增结束
 
 const adjustPosition = () => {
+  if (!container) return
   const menuEl = container.firstElementChild as HTMLElement | null
   if (!menuEl) return
 
@@ -74,7 +128,13 @@ const adjustPosition = () => {
   }
 }
 
-const show = (event: MouseEvent, items: MenuItem[], size?: MenuSize) => {
+// 原代码 - Codex 保留
+// const show = (event: MouseEvent, items: MenuItem[], size?: MenuSize) => {
+// Codex 新增开始
+const show = (event: MouseEvent, items: MadokaContextMenuItem[], size?: MadokaContextMenuSize) => {
+  ensureContextMenuDom()
+  if (!container) return
+// Codex 新增结束
   // 新增：强制卸载上一次菜单
   render(null, container)
   event.preventDefault()
@@ -87,7 +147,11 @@ const show = (event: MouseEvent, items: MenuItem[], size?: MenuSize) => {
   // 等 Vue 渲染后再调整位置
   nextTick(adjustPosition)
 }
-const renderMenuItems = (items: MenuItem[], isChildren: boolean = false) =>
+// 原代码 - Codex 保留
+// const renderMenuItems = (items: MenuItem[], isChildren: boolean = false) =>
+// Codex 新增开始
+const renderMenuItems = (items: MadokaContextMenuItem[], isChildren: boolean = false) =>
+// Codex 新增结束
   items.map((item) => (
     <li
       key={item.label}
@@ -155,11 +219,33 @@ const Menu = () => {
 
 // 响应式渲染一次即可
 watchEffect(() => {
-  render(Menu(), container)
+  // 原代码 - Codex 保留
+  // render(Menu(), container)
+  // Codex 新增开始
+  if (container) render(Menu(), container)
+  // Codex 新增结束
 })
 
 // 全局点击隐藏
-document.addEventListener('click', hide)
+// 原代码 - Codex 保留
+// document.addEventListener('click', hide)
 
 // 暴露给外部调用
-export const useContextMenu = () => ({ show, hide })
+// 原代码 - Codex 保留
+// export const useContextMenu = () => ({ show, hide })
+// Codex 新增开始
+const destroy = () => {
+  if (!container) return
+  render(null, container)
+  container.removeEventListener('mouseover', handleMouseOver)
+  document.removeEventListener('click', hide)
+  container.remove()
+  style?.remove()
+  container = null
+  style = null
+  initialized = false
+  state.visible = false
+}
+
+export const useContextMenu = () => ({ show, hide, destroy })
+// Codex 新增结束

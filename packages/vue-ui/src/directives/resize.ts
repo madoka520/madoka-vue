@@ -1,9 +1,22 @@
 import type { DirectiveBinding } from 'vue'
 
 // Codex 新增开始
+export type MadokaResizeDirectivePayload = {
+  width: number
+  height: number
+  newLeft: number
+  newTop: number
+}
+
+export type MadokaResizeDirectiveOptions = {
+  enabled?: () => boolean
+  onResize?: (payload: MadokaResizeDirectivePayload) => void
+}
+
 declare global {
   interface HTMLElement {
     _resizeHandles?: HTMLDivElement[]
+    __madokaResizeCleanup__?: () => void
   }
 }
 
@@ -19,7 +32,11 @@ const directions = [
 ]
 
 const madokaResize = {
-  updated(el: HTMLElement, binding: DirectiveBinding) {
+  // 原代码 - Codex 保留
+  // updated(el: HTMLElement, binding: DirectiveBinding) {
+  // Codex 新增开始
+  updated(el: HTMLElement, binding: DirectiveBinding<MadokaResizeDirectiveOptions>) {
+  // Codex 新增结束
     if (el._resizeHandles) {
       const enabled = binding.value?.enabled() !== false
       for (const handle of el._resizeHandles) {
@@ -28,8 +45,17 @@ const madokaResize = {
       }
     }
   },
-  mounted(el: HTMLElement, binding: DirectiveBinding) {
+  // 原代码 - Codex 保留
+  // mounted(el: HTMLElement, binding: DirectiveBinding) {
+  // Codex 新增开始
+  mounted(el: HTMLElement, binding: DirectiveBinding<MadokaResizeDirectiveOptions>) {
+  // Codex 新增结束
     const handles: HTMLDivElement[] = []
+    // 原代码 - Codex 保留
+    // const cleanupList: Array<() => void> = []
+    // Codex 新增开始
+    const cleanupList: Array<() => void> = []
+    // Codex 新增结束
     if (getComputedStyle(el).position === 'static') {
       el.style.position = 'absolute' // 或 'relative'
     }
@@ -67,7 +93,7 @@ const madokaResize = {
         if (dir.includes('top')) el.style.top = newTop + 'px'
       }
 
-      if (typeof binding.value.onResize === 'function') {
+      if (typeof binding.value?.onResize === 'function') {
         binding.value.onResize({ width: newWidth, height: newHeight, newLeft, newTop })
       }
     }
@@ -144,19 +170,36 @@ const madokaResize = {
           break
       }
 
-      handle.addEventListener('mousedown', createMouseDown(name))
+      // 原代码 - Codex 保留
+      // handle.addEventListener('mousedown', createMouseDown(name))
+      // cleanupList.push(() => handle.removeEventListener('mousedown', createMouseDown(name)))
+      // Codex 新增开始
+      const mouseDownHandler = createMouseDown(name)
+      handle.addEventListener('mousedown', mouseDownHandler)
+      cleanupList.push(() => handle.removeEventListener('mousedown', mouseDownHandler))
+      // Codex 新增结束
       el.appendChild(handle)
       handles.push(handle)
     }
 
     el._resizeHandles = handles
+    el.__madokaResizeCleanup__ = () => {
+      cleanupList.forEach(cleanup => cleanup())
+      handles.forEach(handle => handle.remove())
+      delete el._resizeHandles
+    }
   },
 
   unmounted(el: HTMLElement) {
-    if (el._resizeHandles) {
-      el._resizeHandles.forEach(handle => handle.remove())
-      delete el._resizeHandles
-    }
+    // Codex 新增开始
+    el.__madokaResizeCleanup__?.()
+    delete el.__madokaResizeCleanup__
+    // Codex 新增结束
+    // 原代码 - Codex 保留
+    // if (el._resizeHandles) {
+    //   el._resizeHandles.forEach(handle => handle.remove())
+    //   delete el._resizeHandles
+    // }
   }
 }
 

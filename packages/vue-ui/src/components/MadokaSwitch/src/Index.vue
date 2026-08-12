@@ -16,20 +16,25 @@
 
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import type { MadokaSwitchValue } from '../types'
+import type { MadokaSwitchValue } from '../../../types'
+import type { MadokaSwitchEmits, MadokaSwitchProps } from './types'
 
 const modelValue = defineModel<MadokaSwitchValue>({
   default: false,
 })
 
 const props = withDefaults(
-  defineProps<{
-    disabled?: boolean
-    text?: {
-      on: string
-      off: string
-    }
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   disabled?: boolean
+  //   text?: {
+  //     on: string
+  //     off: string
+  //   }
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaSwitchProps>(),
+  // Codex 新增结束
   {
     disabled: false,
   },
@@ -37,10 +42,14 @@ const props = withDefaults(
 const isChecked = computed(() => {
   return modelValue.value === true || modelValue.value === 1
 })
-const emits = defineEmits<{
-  (e: 'click', val: MadokaSwitchValue): void
-  (e: 'change', val: MadokaSwitchValue): void
-}>()
+// 原代码 - Codex 保留
+// const emits = defineEmits<{
+//   (e: 'click', val: MadokaSwitchValue): void
+//   (e: 'change', val: MadokaSwitchValue): void
+// }>()
+// Codex 新增开始
+const emits = defineEmits<MadokaSwitchEmits>()
+// Codex 新增结束
 const Switch = (() => {
   const onToggle = (e: Event) => {
     if (props.disabled) return

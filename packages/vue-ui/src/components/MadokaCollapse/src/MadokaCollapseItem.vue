@@ -22,19 +22,30 @@
 </template>
 <script setup lang="ts">
 import { inject, computed, useTemplateRef } from 'vue'
+import type { MadokaCollapseItemProps } from './types'
+import { madokaCollapseContextKey } from './types'
 
-interface Props {
-  name: string | number
-  title?: string
-  disabled?: boolean
-}
+// 原代码 - Codex 保留
+// interface Props {
+//   name: string | number
+//   title?: string
+//   disabled?: boolean
+// }
 
-const props = defineProps<Props>()
+// 原代码 - Codex 保留
+// const props = defineProps<Props>()
+// Codex 新增开始
+const props = defineProps<MadokaCollapseItemProps>()
+// Codex 新增结束
 
-const context = inject<{
-  activeNames: () => string | number | (string | number)[]
-  handleItemClick: (name: string | number) => void
-}>('collapseContext')
+// 原代码 - Codex 保留
+// const context = inject<{
+//   activeNames: () => string | number | (string | number)[]
+//   handleItemClick: (name: string | number) => void
+// }>('collapseContext')
+// Codex 新增开始
+const context = inject(madokaCollapseContextKey)
+// Codex 新增结束
 
 const contentRef = useTemplateRef<HTMLDivElement>('contentRef')
 

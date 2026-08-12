@@ -21,12 +21,17 @@
 </template>
 <script setup lang="ts">
 import { reactive } from 'vue'
-import type { MadokaOptionValue, MadokaTabOption } from '../types'
+import type { MadokaOptionValue } from '../../../types'
+import type { MadokaTabProps } from './types'
 
 const props = withDefaults(
-  defineProps<{
-    options: readonly MadokaTabOption[]
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   options: readonly MadokaTabOption[]
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaTabProps>(),
+  // Codex 新增结束
   {
     options: () => [],
   },
@@ -55,7 +60,13 @@ const Root = (() => {
     getWidth,
     getTransform,
   })
-  modelValue.value = props.options[0]?.value
+  // 原代码 - Codex 保留
+  // modelValue.value = props.options[0]?.value
+  // Codex 新增开始
+  if (modelValue.value === '' && props.options.length) {
+    modelValue.value = props.options[0]?.value
+  }
+  // Codex 新增结束
   return s
 })()
 </script>

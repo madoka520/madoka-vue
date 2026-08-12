@@ -25,18 +25,53 @@ pnpm --filter @madoka520/vue-ui run build
 
 Publishing uses GitHub Packages under the `@madoka520` scope.
 
-Root `.npmrc` should use an environment token:
+Project `.npmrc` only needs the registry mapping:
 
 ```ini
 @madoka520:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
 
-Publish order:
+Log in once on your machine before publishing:
 
 ```bash
-pnpm --filter @madoka520/vue-utils publish --no-git-checks
-pnpm --filter @madoka520/vue-ui publish --no-git-checks
+npm login --scope=@madoka520 --registry=https://npm.pkg.github.com --auth-type=legacy
 ```
 
-`@madoka520/vue-ui` depends on `@madoka520/vue-utils`, so publish utils first.
+## Release flow
+
+Use Changesets for versioning and publishing.
+
+Every release:
+
+```bash
+pnpm changeset
+pnpm version-packages
+git add .
+git commit -m "Version packages"
+pnpm release
+```
+
+When `pnpm changeset` asks which packages changed:
+
+- choose `@madoka520/vue-ui` for UI component, directive, style, or UI type changes
+- choose `@madoka520/vue-utils` for utility function or utility type changes
+- choose `patch` for fixes and small compatible improvements
+- choose `minor` for new compatible features
+- choose `major` for breaking changes
+
+If a changeset file already exists, do not run `pnpm changeset` again. Continue from:
+
+```bash
+pnpm version-packages
+git add .
+git commit -m "Version packages"
+pnpm release
+```
+
+Useful scripts:
+
+```bash
+pnpm build              # build all packages
+pnpm version-packages   # apply pending changesets to package versions
+pnpm release            # build and publish packages with changesets
+```

@@ -9,20 +9,20 @@
 </template>
 
 <script setup lang="ts">
-// 原代码 - Codex 保留
-// import type { Variant } from '@/components/button/button.ts'
-// Codex 新增开始
-import type { Variant } from './button'
-// Codex 新增结束
+import type { MadokaButtonPrimaryProps } from './types'
 import { getRGB } from '@madoka520/vue-utils'
 
 const props = withDefaults(
-  defineProps<{
-    text?: string
-    color?: string
-    variant?: Variant
-    radius?: number
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   text?: string
+  //   color?: string
+  //   variant?: Variant
+  //   radius?: number
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaButtonPrimaryProps>(),
+  // Codex 新增结束
   {
     color: '#409eff',
     radius: 4,

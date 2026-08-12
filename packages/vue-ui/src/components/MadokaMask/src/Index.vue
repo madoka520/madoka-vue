@@ -12,17 +12,18 @@
 </template>
 
 <script setup lang="ts">
-// 原代码 - Codex 保留
-// import useModalState from "@/hooks/useModalState"
-// Codex 新增开始
-import useModalState from '../hooks/useModalState'
-// Codex 新增结束
+import useModalState from '../../../hooks/useModalState'
+import type { MadokaMaskEmits, MadokaMaskProps } from './types'
 
 const props = withDefaults(
-  defineProps<{
-    maskClosable?: boolean
-    beforeClose?: () => void | Promise<void>
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   maskClosable?: boolean
+  //   beforeClose?: () => void | Promise<void>
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaMaskProps>(),
+  // Codex 新增结束
   {
     maskClosable: true,
   },
@@ -39,9 +40,13 @@ const zIndex = useModalState().zIndex
 const contentZIndex = computed(() => zIndex.value + 1)
 zIndex.value++
 // Codex 新增结束
-const emits = defineEmits<{
-  (e: "cancel", event: Event): void
-}>()
+// 原代码 - Codex 保留
+// const emits = defineEmits<{
+//   (e: "cancel", event: Event): void
+// }>()
+// Codex 新增开始
+const emits = defineEmits<MadokaMaskEmits>()
+// Codex 新增结束
 
 const Root = (() => {
   const cancel = async (e: Event) => {

@@ -6,11 +6,16 @@
   </span>
 </template>
 <script lang="ts" setup>
+import type { MadokaButtonOutlineProps } from './types'
 const props = withDefaults(
-  defineProps<{
-    text?: string
-    color?: string
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   text?: string
+  //   color?: string
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaButtonOutlineProps>(),
+  // Codex 新增结束
   {
     color: '#ff7eb9',
   },

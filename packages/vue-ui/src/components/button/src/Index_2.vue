@@ -9,11 +9,16 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { MadokaButtonSubmitProps } from './types'
 
 const props = withDefaults(
-  defineProps<{
-    text?: string
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   text?: string
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaButtonSubmitProps>(),
+  // Codex 新增结束
   {},
 )
 const loading = defineModel("loading", {

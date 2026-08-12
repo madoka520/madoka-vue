@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import { provide } from 'vue'
+import type { MadokaCollapseModelValue, MadokaCollapseProps } from './types'
+import { madokaCollapseContextKey } from './types'
 
-interface Props {
-  accordion?: boolean // 是否是手风琴模式
-}
+// 原代码 - Codex 保留
+// interface Props {
+//   accordion?: boolean // 是否是手风琴模式
+// }
 
-const props = defineProps<Props>()
+// 原代码 - Codex 保留
+// const props = defineProps<Props>()
+// Codex 新增开始
+const props = defineProps<MadokaCollapseProps>()
+// Codex 新增结束
 
 // 使用 defineModel 处理双向绑定
-const modelValue = defineModel<string | number | (string | number)[]>({
+// 原代码 - Codex 保留
+// const modelValue = defineModel<string | number | (string | number)[]>({
+// Codex 新增开始
+const modelValue = defineModel<MadokaCollapseModelValue>({
+// Codex 新增结束
   default: '',
 })
 
@@ -31,7 +42,11 @@ const handleItemClick = (name: string | number) => {
 }
 
 // 注入上下文给子组件
-provide('collapseContext', {
+// 原代码 - Codex 保留
+// provide('collapseContext', {
+// Codex 新增开始
+provide(madokaCollapseContextKey, {
+// Codex 新增结束
   activeNames: () => modelValue.value,
   handleItemClick,
 })

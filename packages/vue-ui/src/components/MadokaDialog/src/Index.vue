@@ -36,27 +36,27 @@
   <slot v-else />
 </template>
 <script setup lang="ts">
-// 原代码 - Codex 保留
-// import MadokaMask from '@/components/MadokaMask.vue'
-// import MadokaBtn from '@/components/button/Index.vue'
-// Codex 新增开始
-import MadokaMask from './MadokaMask.vue'
-import MadokaBtn from './button/Index.vue'
+import MadokaMask from '../../MadokaMask/src/Index.vue'
+import MadokaBtn from '../../button/src/Index.vue'
 import { useMouse } from '@vueuse/core'
-// Codex 新增结束
+import type { MadokaDialogEmits, MadokaDialogProps } from './types'
 
 const props = withDefaults(
-  defineProps<{
-    width?: string
-    height?: string
-    footer?: boolean
-    title?: string
-    okText?: string
-    cancelText?: string
-    unuseModel?: boolean
-    background?: string
-    hiddenCancel?: boolean
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   width?: string
+  //   height?: string
+  //   footer?: boolean
+  //   title?: string
+  //   okText?: string
+  //   cancelText?: string
+  //   unuseModel?: boolean
+  //   background?: string
+  //   hiddenCancel?: boolean
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaDialogProps>(),
+  // Codex 新增结束
   {
     title: '',
     footer: true,
@@ -64,7 +64,11 @@ const props = withDefaults(
     height: '300px',
     okText: '确 定',
     cancelText: '取 消',
-    unuseMode: false,
+    // 原代码 - Codex 保留
+    // unuseMode: false,
+    // Codex 新增开始
+    unuseModel: false,
+    // Codex 新增结束
     background: 'rgba(255, 240, 245, 0.7)',
     hiddenCancel: false,
   },
@@ -76,10 +80,14 @@ const mouse = useMouse()
 const modelValue = defineModel({
   default: false,
 })
-const emits = defineEmits<{
-  (e: 'cancel', event?: Event): void
-  (e: 'ok', event: Event): void
-}>()
+// 原代码 - Codex 保留
+// const emits = defineEmits<{
+//   (e: 'cancel', event?: Event): void
+//   (e: 'ok', event: Event): void
+// }>()
+// Codex 新增开始
+const emits = defineEmits<MadokaDialogEmits>()
+// Codex 新增结束
 
 const Root = (() => {
   const setWatcher = () => {

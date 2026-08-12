@@ -7,13 +7,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { MadokaInputValue } from '../../types'
+import type { MadokaInputValue } from '../../../types'
+import type { MadokaInputProps } from './types'
 const props = withDefaults(
-  defineProps<{
-    placeholder?: string
-    type?: 'number' | 'text' | 'file' | 'textarea' | 'password'
-    width?: string
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   placeholder?: string
+  //   type?: 'number' | 'text' | 'file' | 'textarea' | 'password'
+  //   width?: string
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaInputProps>(),
+  // Codex 新增结束
   {
     placeholder: '请输入魔法代码...',
     type: 'text',

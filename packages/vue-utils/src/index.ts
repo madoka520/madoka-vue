@@ -15,13 +15,30 @@ export const sleep = (timeout = 0): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, timeout))
 }
 
-export const enumToOptions = <T extends Record<string, string | number>>(value: T) => {
-  return Object.entries(value)
-    .filter(([key]) => Number.isNaN(Number(key)))
-    .map(([label, optionValue]) => ({ label, value: optionValue }))
+// Codex 新增开始
+export type MadokaEnumOption<T extends string | number = string | number> = {
+  label: string
+  value: T
 }
 
-export const getRGB = (color: string): [number, number, number] | null => {
+export type RGBColor = [red: number, green: number, blue: number]
+// Codex 新增结束
+
+// 原代码 - Codex 保留
+// export const enumToOptions = <T extends Record<string, string | number>>(value: T) => {
+// Codex 新增开始
+export const enumToOptions = <T extends Record<string, string | number>>(value: T): MadokaEnumOption<T[keyof T]>[] => {
+// Codex 新增结束
+  return Object.entries(value)
+    .filter(([key]) => Number.isNaN(Number(key)))
+    .map(([label, optionValue]) => ({ label, value: optionValue as T[keyof T] }))
+}
+
+// 原代码 - Codex 保留
+// export const getRGB = (color: string): [number, number, number] | null => {
+// Codex 新增开始
+export const getRGB = (color: string): RGBColor | null => {
+// Codex 新增结束
   const canvas = document.createElement('canvas')
   canvas.width = canvas.height = 1
   const context = canvas.getContext('2d')

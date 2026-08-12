@@ -1,6 +1,15 @@
 import type { Directive } from 'vue'
 
 // Codex 新增开始
+export type MadokaMoveDirectiveOptions = {
+  enabled?: () => boolean
+  onMove?: (deltaX: number, deltaY: number) => void
+}
+
+type MadokaMoveElement = HTMLElement & {
+  __madokaMoveCleanup__?: () => void
+}
+
 const madokaMove = {
   mounted(el, binding) {
     let lastX = 0
@@ -11,9 +20,17 @@ const madokaMove = {
     if (!titleEl) return
 
     const onMouseDown = (e: MouseEvent) => {
-      const enabled = binding.value.enabled
-      if (!enabled) return
-      if (!enabled()) return
+      // 原代码 - Codex 保留
+      // const enabled = binding.value.enabled
+      // if (!enabled) return
+      // Codex 新增开始
+      const enabled = binding.value?.enabled
+      // Codex 新增结束
+      // 原代码 - Codex 保留
+      // if (!enabled()) return
+      // Codex 新增开始
+      if (enabled && !enabled()) return
+      // Codex 新增结束
 
       // ✅ 用 screenX（关键）
       lastX = e.screenX
@@ -43,8 +60,18 @@ const madokaMove = {
     }
 
     titleEl.addEventListener('mousedown', onMouseDown)
+
+    ;(el as MadokaMoveElement).__madokaMoveCleanup__ = () => {
+      titleEl.removeEventListener('mousedown', onMouseDown)
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+    }
   },
-} as Directive<HTMLElement>
+
+  unmounted(el) {
+    ;(el as MadokaMoveElement).__madokaMoveCleanup__?.()
+  },
+} as Directive<HTMLElement, MadokaMoveDirectiveOptions>
 
 export default madokaMove
 // Codex 新增结束

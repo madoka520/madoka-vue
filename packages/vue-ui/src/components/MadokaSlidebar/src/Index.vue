@@ -15,12 +15,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { MadokaOptionValue, MadokaSlidebarItem } from '../types'
+import type { MadokaOptionValue } from '../../../types'
+import type { MadokaSlidebarProps } from './types'
 
 const props = withDefaults(
-  defineProps<{
-    list: readonly MadokaSlidebarItem[]
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   list: readonly MadokaSlidebarItem[]
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaSlidebarProps>(),
+  // Codex 新增结束
   {},
 )
 const current = defineModel<MadokaOptionValue>({

@@ -1,6 +1,11 @@
 <template>
-  <div class="madoka-select-wrapper" tabindex="-1" @blur="handleClickOutside">
-    <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click="toggleMenu">
+  <!-- 原代码 - Codex 保留 -->
+  <!-- <div class="madoka-select-wrapper" tabindex="-1" @blur="handleClickOutside"> -->
+  <!-- <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click="toggleMenu"> -->
+  <!-- Codex 新增开始 -->
+  <div ref="selectRef" class="madoka-select-wrapper" tabindex="-1">
+    <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu">
+      <!-- Codex 新增结束 -->
       <span class="selected-label">
         {{ selectedLabel || '请选择' }}
       </span>
@@ -9,13 +14,17 @@
 
     <Transition name="fade-slide">
       <ul v-show="isOpen" class="madoka-options-menu">
+        <!-- 原代码 - Codex 保留 -->
+        <!-- <li v-for="item in options" :key="String(item[valueName])" class="madoka-option-item" :class="{ 'is-selected': modelValue === item[valueName] }" @click="handleSelect(item)"> -->
+        <!-- Codex 新增开始 -->
         <li
           v-for="item in options"
           :key="String(item[valueName])"
           class="madoka-option-item"
           :class="{ 'is-selected': modelValue === item[valueName] }"
-          @click="handleSelect(item)"
+          @click.stop="handleSelect(item)"
         >
+          <!-- Codex 新增结束 -->
           {{ item[labelName] }}
           <span v-if="modelValue === item[valueName]" class="check-mark">✓</span>
         </li>
@@ -26,16 +35,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import type { SelectOption } from './types'
-import type { MadokaOptionValue } from '../../types'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import type { MadokaOption, MadokaOptionValue } from '../../../types'
+import type { MadokaSelectProps } from './props'
 
 const props = withDefaults(
-  defineProps<{
-    options: SelectOption[]
-    labelName?: string
-    valueName?: string
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+    //   labelName?: string
+  //   valueName?: string
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaSelectProps>(),
+  // Codex 新增结束
   {
     options: () => [],
     labelName: 'label',
@@ -49,6 +61,10 @@ const modelValue = defineModel<MadokaOptionValue>({
 
 const isOpen = ref(false)
 
+// Codex 新增开始
+const selectRef = useTemplateRef<HTMLElement>('selectRef')
+// Codex 新增结束
+
 // 获取当前显示的 label
 const selectedLabel = computed(() => {
   const target = props.options.find((opt) => opt[props.valueName] === modelValue.value)
@@ -59,22 +75,38 @@ const toggleMenu = () => {
   isOpen.value = !isOpen.value
 }
 
-const handleSelect = (item: SelectOption) => {
+const handleSelect = (item: MadokaOption) => {
   modelValue.value = item[props.valueName] as MadokaOptionValue
   isOpen.value = false
 }
 
 // 点击外部关闭下拉框
+// 原代码 - Codex 保留
+// const handleClickOutside = (e: MouseEvent) => {
+//   isOpen.value = false
+// }
+// Codex 新增开始
 const handleClickOutside = (e: MouseEvent) => {
+  const target = e.target as Node | null
+  if (target && selectRef.value?.contains(target)) return
   isOpen.value = false
 }
+// Codex 新增结束
 
 onMounted(() => {
-  window.addEventListener('click', handleClickOutside)
+  // 原代码 - Codex 保留
+  // window.addEventListener('click', handleClickOutside)
+  // Codex 新增开始
+  document.addEventListener('click', handleClickOutside)
+  // Codex 新增结束
 })
 
 onUnmounted(() => {
-  window.removeEventListener('click', handleClickOutside)
+  // 原代码 - Codex 保留
+  // window.removeEventListener('click', handleClickOutside)
+  // Codex 新增开始
+  document.removeEventListener('click', handleClickOutside)
+  // Codex 新增结束
 })
 
 defineOptions({

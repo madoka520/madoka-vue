@@ -1,13 +1,21 @@
 // modal.tsx
 import { createVNode, reactive, render } from 'vue'
 import type { JSX } from 'vue/jsx-runtime'
-// 原代码 - Codex 保留
-// import MadokaMask from '@/components/MadokaMask.vue'
+import MadokaMask from './MadokaMask/src/Index.vue'
+
 // Codex 新增开始
-import MadokaMask from './MadokaMask.vue'
+export type MadokaMaskContent = JSX.Element | (() => JSX.Element) | string
+export type MadokaMaskClose = () => void
 // Codex 新增结束
 
-export default (content: JSX.Element | (() => JSX.Element) | string) => {
+// 原代码 - Codex 保留
+// export default (content: JSX.Element | (() => JSX.Element) | string) => {
+// Codex 新增开始
+export default (content: MadokaMaskContent): MadokaMaskClose => {
+// Codex 新增结束
+  // Codex 新增开始
+  if (typeof document === 'undefined') return () => {}
+  // Codex 新增结束
   const state = reactive({
     visible: false, // ⚠️ 一定是 false
     content: content ?? null,

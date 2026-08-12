@@ -8,26 +8,30 @@
 
 <script setup lang="ts">
 import { capitalize } from 'lodash'
-// 原代码 - Codex 保留
-// import type { Variant } from '@/components/button/button'
-// Codex 新增开始
-import type { Variant } from './button'
-// Codex 新增结束
+import type { MadokaButtonEmits, MadokaButtonProps, MadokaButtonResolvedComponent } from './types'
 const props = withDefaults(
-  defineProps<{
-    type: string
-    color?: string
-    disabled?: boolean
-    variant?: Variant
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   type: string
+  //   color?: string
+  //   disabled?: boolean
+  //   variant?: Variant
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaButtonProps>(),
+  // Codex 新增结束
   {},
 )
 defineOptions({
   name: 'madoka-btn',
 })
-const emits = defineEmits<{
-  (e: 'click', event: MouseEvent): void
-}>()
+// 原代码 - Codex 保留
+// const emits = defineEmits<{
+//   (e: 'click', event: MouseEvent): void
+// }>()
+// Codex 新增开始
+const emits = defineEmits<MadokaButtonEmits>()
+// Codex 新增结束
 
 // 原代码 - Codex 保留
 // const components = import.meta.glob('/src/components/button/*.vue')
@@ -57,7 +61,11 @@ const Root = (() => {
   }
 
   const s = reactive({
-    component: 'div' as string | Component,
+    // 原代码 - Codex 保留
+    // component: 'div' as string | Component,
+    // Codex 新增开始
+    component: 'div' as MadokaButtonResolvedComponent,
+    // Codex 新增结束
   })
   setWatcher()
   return s

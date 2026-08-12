@@ -9,13 +9,18 @@
 </template>
 
 <script setup lang="ts">
+import type { MadokaButtonEmits, MadokaButtonLinkProps } from './types'
 const props = withDefaults(
-  defineProps<{
-    label?: string
-    href?: string
-    target?: '_blank' | '_self'
-    disabled?: boolean
-  }>(),
+  // 原代码 - Codex 保留
+  // defineProps<{
+  //   label?: string
+  //   href?: string
+  //   target?: '_blank' | '_self'
+  //   disabled?: boolean
+  // }>(),
+  // Codex 新增开始
+  defineProps<MadokaButtonLinkProps>(),
+  // Codex 新增结束
   {
     label: '',
     target: '_self',
@@ -23,9 +28,13 @@ const props = withDefaults(
   },
 )
 
-const emits = defineEmits<{
-  (e: 'click', e2: MouseEvent): void
-}>()
+// 原代码 - Codex 保留
+// const emits = defineEmits<{
+//   (e: 'click', e2: MouseEvent): void
+// }>()
+// Codex 新增开始
+const emits = defineEmits<MadokaButtonEmits>()
+// Codex 新增结束
 
 const Link = (() => {
   const onClick = (e: MouseEvent) => {

@@ -1,19 +1,22 @@
 // modal.tsx
 import { reactive, createVNode, render } from "vue"
 import type { JSX } from "vue/jsx-runtime"
-// 原代码 - Codex 保留
-// import MadokaDialog from "@/components/MadokaDialog.vue"
-// import { message } from "@/components/message"
-// Codex 新增开始
-import MadokaDialog from './MadokaDialog.vue'
+import MadokaDialog from './MadokaDialog/src/Index.vue'
 import { message } from './message'
-// Codex 新增结束
 
-type ConfirmOptions = {
+// 原代码 - Codex 保留
+// type ConfirmOptions = {
+// Codex 新增开始
+export type MadokaModalConfirmOptions = {
+// Codex 新增结束
   width?: string
   title?: string
   content?: JSX.Element | string
-  onOk?: () => void
+  // 原代码 - Codex 保留
+  // onOk?: () => void
+  // Codex 新增开始
+  onOk?: () => void | Promise<void>
+  // Codex 新增结束
   onCancel?: () => void
   hiddenCancel?: boolean
   okText?: string
@@ -21,7 +24,14 @@ type ConfirmOptions = {
 }
 
 export default (() => {
-  const confirm = (options: ConfirmOptions) => {
+  // 原代码 - Codex 保留
+  // const confirm = (options: ConfirmOptions) => {
+  // Codex 新增开始
+  const confirm = (options: MadokaModalConfirmOptions) => {
+  // Codex 新增结束
+    // Codex 新增开始
+    if (typeof document === 'undefined') return
+    // Codex 新增结束
     const state = reactive({
       visible: false, // ⚠️ 一定是 false
       title: options.title ?? "",
@@ -76,7 +86,11 @@ export default (() => {
     })
   }
 
-  const info = (options: Omit<ConfirmOptions, "onCancel">) => {
+  // 原代码 - Codex 保留
+  // const info = (options: Omit<ConfirmOptions, "onCancel">) => {
+  // Codex 新增开始
+  const info = (options: Omit<MadokaModalConfirmOptions, "onCancel">) => {
+  // Codex 新增结束
     confirm({
       ...options,
       hiddenCancel: true,
