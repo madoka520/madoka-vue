@@ -19,7 +19,7 @@ export default defineConfig({
     minify: false,
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'MadokaPreUi',
+      name: 'MadokaVueUi',
       fileName: 'vue-ui',
       formats: ['es'],
     },

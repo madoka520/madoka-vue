@@ -1,20 +1,27 @@
 # madoka-vue
 
-`madoka-vue` is the Vue package workspace for Madoka frontend projects.
+`madoka-vue` 是 Madoka 前端项目使用的 Vue 包工作区。
 
-## Packages
+## 子包
 
-- `@madoka520/vue-ui` - Vue UI components.
-- `@madoka520/vue-utils` - Vue-oriented utility helpers.
+- `@madoka520/vue-ui`：Vue UI 组件、指令和 UI 相关组合式函数。
+- `@madoka520/vue-utils`：面向 Vue / 浏览器环境的工具函数。
 
-## Development
+## 开发
+
+安装依赖：
 
 ```bash
 pnpm install
-pnpm -r build
 ```
 
-Build a single package:
+构建全部子包：
+
+```bash
+pnpm build
+```
+
+只构建某一个子包：
 
 ```bash
 pnpm --filter @madoka520/vue-utils run build
@@ -23,25 +30,25 @@ pnpm --filter @madoka520/vue-ui run build
 
 ## GitHub Packages
 
-Publishing uses GitHub Packages under the `@madoka520` scope.
+包发布到 GitHub Packages，作用域是 `@madoka520`。
 
-Project `.npmrc` only needs the registry mapping:
+项目 `.npmrc` 只需要配置 registry：
 
 ```ini
 @madoka520:registry=https://npm.pkg.github.com
 ```
 
-Log in once on your machine before publishing:
+发布前，本机需要先登录一次 GitHub Packages：
 
 ```bash
 npm login --scope=@madoka520 --registry=https://npm.pkg.github.com --auth-type=legacy
 ```
 
-## Release flow
+## 发布流程
 
-Use Changesets for versioning and publishing.
+项目使用 Changesets 管理版本和发布。
 
-Every release:
+每次发布完整流程：
 
 ```bash
 pnpm changeset
@@ -51,15 +58,15 @@ git commit -m "Version packages"
 pnpm release
 ```
 
-When `pnpm changeset` asks which packages changed:
+执行 `pnpm changeset` 时按实际改动选择子包：
 
-- choose `@madoka520/vue-ui` for UI component, directive, style, or UI type changes
-- choose `@madoka520/vue-utils` for utility function or utility type changes
-- choose `patch` for fixes and small compatible improvements
-- choose `minor` for new compatible features
-- choose `major` for breaking changes
+- 改了组件、指令、样式、UI 类型，选择 `@madoka520/vue-ui`
+- 改了工具函数或工具类型，选择 `@madoka520/vue-utils`
+- 修复问题或小型兼容优化，选择 `patch`
+- 新增兼容功能，选择 `minor`
+- 破坏性变更，选择 `major`
 
-If a changeset file already exists, do not run `pnpm changeset` again. Continue from:
+如果 `.changeset` 里已经存在本次发布记录，不要重复执行 `pnpm changeset`，直接从这里继续：
 
 ```bash
 pnpm version-packages
@@ -68,10 +75,16 @@ git commit -m "Version packages"
 pnpm release
 ```
 
-Useful scripts:
+常用脚本：
 
 ```bash
-pnpm build              # build all packages
-pnpm version-packages   # apply pending changesets to package versions
-pnpm release            # build and publish packages with changesets
+pnpm build              # 构建所有子包
+pnpm version-packages   # 根据 changeset 更新版本号和 changelog
+pnpm release            # 构建并发布需要发布的包
 ```
+
+## 约定
+
+- README 使用中文。
+- 代码注释使用中文。
+- 组件目录尽量保持类似 Element Plus 的结构：组件目录下使用 `src/Index.vue` 和 `src/types.ts` / `src/props.ts`。
