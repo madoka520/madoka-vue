@@ -1,5 +1,5 @@
 <template>
-  <div :class="['submit-btn', { loading: loading }]" ref="ref_button">
+  <div class="madoka-btn-base" :class="['submit-btn', { loading: loading }]" ref="ref_button">
     <span v-show="!loading">
       <slot>
         {{ text }}
@@ -36,10 +36,9 @@ const loading = defineModel("loading", {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Codex 新增开始 */
-  white-space: nowrap;
-  width: fit-content;
-  /* Codex 新增结束 */
+  /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
+  /* white-space: nowrap; */
+  /* width: fit-content; */
   color: white;
   font-family: "Cinzel", serif;
   font-weight: bold;

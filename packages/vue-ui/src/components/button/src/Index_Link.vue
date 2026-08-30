@@ -1,6 +1,6 @@
 <template>
   <span
-    class="madoka-link"
+    class="madoka-link madoka-btn-base"
     :class="[disabled ? 'disabled' : '']"
     @click="Link.onClick"
   >
@@ -66,10 +66,9 @@ const Link = (() => {
   transition: all 0.2s;
 
   user-select: none;
-  /* Codex 新增开始 */
-  white-space: nowrap;
-  width: fit-content;
-  /* Codex 新增结束 */
+  /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
+  /* white-space: nowrap; */
+  /* width: fit-content; */
 
   &:hover {
     color: #c2255c;

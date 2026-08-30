@@ -73,3 +73,13 @@ const Root = (() => {
 </script>
 
 <style scoped></style>
+<style lang="less">
+/* Codex 新增开始 */
+/* 四个变体（Index_1 / Index_2 / Index_3 / Index_Link）根元素均带 madoka-btn-base 类，
+   公共样式统一写在这里，避免同样的规则要改四个文件 */
+.madoka-btn-base {
+  white-space: nowrap;
+  width: fit-content;
+}
+/* Codex 新增结束 */
+</style>

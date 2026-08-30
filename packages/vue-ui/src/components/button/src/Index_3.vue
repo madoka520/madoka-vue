@@ -1,5 +1,5 @@
 <template>
-  <span class="outline-btn">
+  <span class="outline-btn madoka-btn-base">
     <slot>
       {{ text }}
     </slot>
@@ -27,10 +27,9 @@ const props = withDefaults(
   padding: 10px 30px;
   font-size: 14px;
   font-weight: 500;
-  /* Codex 新增开始 */
-  white-space: nowrap;
-  width: fit-content;
-  /* Codex 新增结束 */
+  /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
+  /* white-space: nowrap; */
+  /* width: fit-content; */
   color: v-bind("props.color");
   background: transparent;
   border: 1px solid rgba(255, 126, 185, 0.5);

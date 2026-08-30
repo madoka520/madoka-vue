@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.4
+
+### Patch Changes
+
+- MadokaBtn 公共样式重构：四个变体根元素统一挂 madoka-btn-base 类，公共规则（white-space: nowrap / width: fit-content）集中到 Index.vue 的全局样式块，后续公共样式只需改一处；行为不变
+
 ## 1.1.3
 
 ### Patch Changes

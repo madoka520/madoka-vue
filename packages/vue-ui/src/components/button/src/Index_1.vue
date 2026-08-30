@@ -1,5 +1,5 @@
 <template>
-  <div class="madoka-btn flex-center" :class="{ [`variant-${variant}`]: true }" tabindex="0">
+  <div class="madoka-btn madoka-btn-base flex-center" :class="{ [`variant-${variant}`]: true }" tabindex="0">
     <span>
       <slot>
         {{ text }}
@@ -50,10 +50,9 @@ const textColor = computed(() => {
   border-radius: v-bind("radius + 'px'");
   gap: 6px;
   user-select: none;
-  /* Codex 新增开始 */
-  white-space: nowrap;
-  width: fit-content;
-  /* Codex 新增结束 */
+  /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
+  /* white-space: nowrap; */
+  /* width: fit-content; */
 }
 
 .variant-text {
