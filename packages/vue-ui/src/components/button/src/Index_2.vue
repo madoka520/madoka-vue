@@ -38,6 +38,7 @@ const loading = defineModel("loading", {
   justify-content: center;
   /* Codex 新增开始 */
   white-space: nowrap;
+  width: fit-content;
   /* Codex 新增结束 */
   color: white;
   font-family: "Cinzel", serif;

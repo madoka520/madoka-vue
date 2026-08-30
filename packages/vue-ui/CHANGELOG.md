@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.3
+
+### Patch Changes
+
+- MadokaBtn 全部变体增加 width: fit-content：按钮宽度自适应文字内容，在拉伸容器中不再被压窄导致文字溢出按钮
+
 ## 1.1.2
 
 ### Patch Changes

@@ -29,6 +29,7 @@ const props = withDefaults(
   font-weight: 500;
   /* Codex 新增开始 */
   white-space: nowrap;
+  width: fit-content;
   /* Codex 新增结束 */
   color: v-bind("props.color");
   background: transparent;

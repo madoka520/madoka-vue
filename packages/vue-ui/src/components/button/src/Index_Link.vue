@@ -68,6 +68,7 @@ const Link = (() => {
   user-select: none;
   /* Codex 新增开始 */
   white-space: nowrap;
+  width: fit-content;
   /* Codex 新增结束 */
 
   &:hover {
