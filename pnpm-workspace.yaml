@@ -1,6 +1,13 @@
 packages:
   - 'packages/*'
 
+# Codex 新增开始
+# 作为 git 依赖被安装时，prepare 内部 install 需要这些依赖的构建脚本加白名单
+allowBuilds:
+  esbuild: true
+  vue-demi: true
+# Codex 新增结束
+
 onlyBuiltDependencies:
   - '@madoka520/vue-ui'
   - '@madoka520/vue-utils'
