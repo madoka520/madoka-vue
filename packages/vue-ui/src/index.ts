@@ -43,7 +43,11 @@ export type { MadokaInputProps, MadokaInputType } from './components/Input/src/t
 export type { MadokaSelectProps } from './components/Select/src/props'
 export type { MadokaDialogEmits, MadokaDialogProps } from './components/MadokaDialog/src/types'
 export type { MadokaMaskEmits, MadokaMaskProps } from './components/MadokaMask/src/types'
-export type { MadokaTabProps } from './components/MadokaTab/src/types'
+// 原代码 - Codex 保留
+// export type { MadokaTabProps } from './components/MadokaTab/src/types'
+// Codex 新增开始
+export type { MadokaTabEmits, MadokaTabProps } from './components/MadokaTab/src/types'
+// Codex 新增结束
 export type { MadokaSwitchEmits, MadokaSwitchProps, MadokaSwitchText } from './components/MadokaSwitch/src/types'
 export type { MadokaSlidebarProps } from './components/MadokaSlidebar/src/types'
 export type {

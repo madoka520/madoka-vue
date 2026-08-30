@@ -9,6 +9,9 @@ export interface MadokaOption {
 export interface MadokaTabOption {
   label: string
   value: MadokaOptionValue
+  // Codex 新增开始
+  closeable?: boolean
+  // Codex 新增结束
 }
 
 export type MadokaInputValue = string | number | null
