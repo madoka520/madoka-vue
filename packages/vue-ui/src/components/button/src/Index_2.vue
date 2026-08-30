@@ -36,6 +36,9 @@ const loading = defineModel("loading", {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Codex 新增开始 */
+  white-space: nowrap;
+  /* Codex 新增结束 */
   color: white;
   font-family: "Cinzel", serif;
   font-weight: bold;

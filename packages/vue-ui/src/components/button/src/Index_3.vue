@@ -27,6 +27,9 @@ const props = withDefaults(
   padding: 10px 30px;
   font-size: 14px;
   font-weight: 500;
+  /* Codex 新增开始 */
+  white-space: nowrap;
+  /* Codex 新增结束 */
   color: v-bind("props.color");
   background: transparent;
   border: 1px solid rgba(255, 126, 185, 0.5);

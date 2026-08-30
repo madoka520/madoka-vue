@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.2
+
+### Patch Changes
+
+- MadokaBtn 全部变体（primary / submit / outlined / link）增加 white-space: nowrap，按钮文字不再换行
+
 ## 1.1.1
 
 ### Patch Changes

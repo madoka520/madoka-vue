@@ -66,6 +66,9 @@ const Link = (() => {
   transition: all 0.2s;
 
   user-select: none;
+  /* Codex 新增开始 */
+  white-space: nowrap;
+  /* Codex 新增结束 */
 
   &:hover {
     color: #c2255c;

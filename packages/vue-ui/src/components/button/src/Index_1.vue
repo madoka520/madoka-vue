@@ -50,6 +50,9 @@ const textColor = computed(() => {
   border-radius: v-bind("radius + 'px'");
   gap: 6px;
   user-select: none;
+  /* Codex 新增开始 */
+  white-space: nowrap;
+  /* Codex 新增结束 */
 }
 
 .variant-text {
