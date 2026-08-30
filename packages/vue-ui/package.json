@@ -28,7 +28,7 @@
   "dependencies": {
     "@vueuse/core": "^11.1.0",
     "lodash": "^4.17.23",
-    "@madoka520/vue-utils": "workspace:*"
+    "@madoka520/vue-utils": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
