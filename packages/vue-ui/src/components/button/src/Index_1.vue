@@ -49,7 +49,8 @@ const textColor = computed(() => {
   padding: 5px 16px;
   border-radius: v-bind("radius + 'px'");
   gap: 6px;
-  user-select: none;
+  /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
+  /* user-select: none; */
   /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
   /* white-space: nowrap; */
   /* width: fit-content; */

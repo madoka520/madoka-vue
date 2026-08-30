@@ -80,6 +80,7 @@ const Root = (() => {
 .madoka-btn-base {
   white-space: nowrap;
   width: fit-content;
+  user-select: none;
 }
 /* Codex 新增结束 */
 </style>

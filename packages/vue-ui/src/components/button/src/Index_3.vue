@@ -35,7 +35,8 @@ const props = withDefaults(
   border: 1px solid rgba(255, 126, 185, 0.5);
   border-radius: 4px; /* 微圆角，更显科技利落感 */
 
-  user-select: none;
+  /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
+  /* user-select: none; */
   display: flex;
   align-items: center;
   justify-content: center;

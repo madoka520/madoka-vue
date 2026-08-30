@@ -44,7 +44,8 @@ const loading = defineModel("loading", {
   font-weight: bold;
   font-size: 1.1rem;
   position: relative;
-  user-select: none;
+  /* 原代码 - Codex 保留（公共样式已抽到 Index.vue 的 .madoka-btn-base） */
+  /* user-select: none; */
   overflow: hidden;
   transition: all 0.5s;
   text-shadow: 0 0 5px #ff8eb2;
