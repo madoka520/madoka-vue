@@ -1,6 +1,6 @@
 {
   "name": "@madoka520/vue-ui",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "files": [
     "dist"
@@ -26,13 +26,14 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
+    "@madoka520/vue-utils": "^0.1.0",
     "@vueuse/core": "^11.1.0",
-    "lodash": "^4.17.23",
-    "@madoka520/vue-utils": "^0.1.0"
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "@vitejs/plugin-vue": "^6.0.0",
+    "@vitejs/plugin-vue-jsx": "^4.1.2",
     "less": "^4.3.0",
     "typescript": "~5.7.2",
     "unplugin-auto-import": "^0.17.5",

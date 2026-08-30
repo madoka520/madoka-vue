@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.1
+
+### Patch Changes
+
+- 修复 .tsx 组件（message / useModal / useContextMenu / useMask）未配置 Vue JSX 转换的问题：此前构建产物将 JSX 按 React 编译（引用 React.createElement），运行时报 React is not defined；现在接入 @vitejs/plugin-vue-jsx，产物正确生成 Vue 虚拟节点调用
+
 ## 1.1.0
 
 ### Minor Changes
