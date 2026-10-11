@@ -21,5 +21,7 @@ export interface MadokaInputProps {
   fontSize?: number
   /** 边框粗细(px),默认 2 */
   borderWidth?: number
+  /** textarea 最小高度(px),默认 150 */
+  textareaMinHeight?: number
 }
 // Codex 新增结束

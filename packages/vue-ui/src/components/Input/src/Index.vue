@@ -1,7 +1,7 @@
 <template>
   <div class="madoka-input-container" :style="cssVars">
     <input v-if="type !== 'textarea'" v-model="modelValue" :type class="madoka-input" :placeholder :style="widthStyle" />
-    <textarea v-else v-model="modelValue" :placeholder :style="widthStyle" class="madoka-input" style="min-height: 150px"/>
+    <textarea v-else v-model="modelValue" :placeholder :style="textareaStyle" class="madoka-input" />
   </div>
 </template>
 
@@ -30,6 +30,7 @@ const props = withDefaults(
     radius: 8,
     fontSize: 16,
     borderWidth: 2,
+    textareaMinHeight: 150,
   },
 )
 defineOptions({
@@ -43,6 +44,14 @@ const modelValue = defineModel<MadokaInputValue>({
 const widthStyle = computed(() => ({
   width: props.width,
 }))
+
+// Codex 新增开始
+// textarea 的最小高度走 prop(原来是内联写死 150px,使用侧 :deep 调不动)
+const textareaStyle = computed(() => [
+  widthStyle.value,
+  { minHeight: `${props.textareaMinHeight}px` },
+])
+// Codex 新增结束
 
 // Codex 新增开始
 // 样式配置经 CSS 变量下发:less 里用 var() 引用,

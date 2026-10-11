@@ -2,7 +2,7 @@
   <madoka-mask v-model="modelValue" v-if="!unuseModel">
     <div
       class="dialog__overlay"
-      :style="{ minWidth: width, minHeight: height, background }"
+      :style="{ minWidth: width, minHeight: height, maxHeight, background }"
       @click.stop
       ref="overlayRef"
     >
@@ -62,6 +62,7 @@ const props = withDefaults(
     footer: true,
     width: '400px',
     height: '300px',
+    maxHeight: '86vh',
     okText: '确 定',
     cancelText: '取 消',
     // 原代码 - Codex 保留
@@ -98,6 +99,10 @@ const Root = (() => {
       if (visible) {
         /* —— 打开 —— */
         nextTick(async () => {
+          // 清理上次可能残留的离场类:transitionend 丢失时 leave-active 不被移除,
+          // 与 enter-active 并存且 CSS 顺序靠后会赢得 opacity:0,弹窗永久隐形
+          el.classList.remove('leave-active')
+
           const { width: w, height: h } = el.getBoundingClientRect()
           const left = mouse.x.value - w * 5
           const top = mouse.y.value - h * 5
@@ -121,21 +126,27 @@ const Root = (() => {
           // 添加关闭状态类，触发淡出动画
           el.classList.add('leave-active')
 
-          // 监听动画结束事件
-          const onEnd = (e: TransitionEvent) => {
-            if (e.target === el) {
-              el.removeEventListener('transitionend', onEnd)
-              el.classList.remove('leave-active')
-              Object.assign(el.style, {
-                // 还原初始内联样式
-                left: '-99999px',
-                top: '-99999px',
-                transform: '',
-                opacity: '',
-              })
-            }
+          // Codex 新增开始
+          // 离场收尾做成幂等函数:transitionend 兜不住的场景(事件丢失/多属性多事件)由定时器兜底,
+          // 常驻挂载反复开关的用法(如图库编辑器)一旦 leave-active 残留,下次打开将永久隐形
+          const cleanup = () => {
+            el.removeEventListener('transitionend', onEnd)
+            clearTimeout(fallbackTimer)
+            el.classList.remove('leave-active')
+            Object.assign(el.style, {
+              // 还原初始内联样式
+              left: '-99999px',
+              top: '-99999px',
+              transform: '',
+              opacity: '',
+            })
           }
+          const onEnd = (e: TransitionEvent) => {
+            if (e.target === el) cleanup()
+          }
+          const fallbackTimer = setTimeout(cleanup, 500)
           el.addEventListener('transitionend', onEnd)
+          // Codex 新增结束
         })
 
         emits('cancel')

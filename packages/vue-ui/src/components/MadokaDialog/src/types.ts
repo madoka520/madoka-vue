@@ -2,6 +2,8 @@
 export interface MadokaDialogProps {
   width?: string
   height?: string
+  /** 最大高度,超出后内容区(main)内部滚动;默认 86vh */
+  maxHeight?: string
   footer?: boolean
   title?: string
   okText?: string
