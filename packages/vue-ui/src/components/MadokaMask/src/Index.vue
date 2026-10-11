@@ -4,9 +4,13 @@
       <Transition name="fade">
         <div class="mask" v-show="modelValue" @click="Root.cancel" :style="{ zIndex }"></div>
       </Transition>
-      <div class="content" :style="{ zIndex: contentZIndex }">
+      <!-- Codex 新增开始 -->
+      <!-- content 跟随 modelValue 显隐:组件式使用时 slot 内容不能常驻
+           (useMask 命令式用法内容里另有 visible 判断,双控不冲突) -->
+      <div class="content" v-show="modelValue" :style="{ zIndex: contentZIndex }">
         <slot />
       </div>
+      <!-- Codex 新增结束 -->
     </div>
   </teleport>
 </template>

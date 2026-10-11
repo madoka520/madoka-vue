@@ -3,7 +3,10 @@
   <!-- 大图预览器:基于 MadokaMask 的自治弹层(父级只调 open(index)),键盘 ←/→/Esc,
        业务信息与操作经具名 slot 上抛(header 右上操作区 / footer 底部信息条) -->
   <MadokaMask v-model="Viewer.visible" :mask-closable="props.maskClosable">
-    <div class="image-viewer">
+    <!-- 💫 v-if 跟随显隐:Mask 的 content 容器只做定位不管显隐,
+         不挂条件的话预览器会常驻全屏(一打开 app 就"弹窗"的根因) -->
+    <Transition name="image-viewer-pop">
+      <div class="image-viewer" v-if="Viewer.visible">
       <!-- 顶部:序号 + 右侧操作 slot(替换/编辑/删除等业务按钮) -->
       <div class="image-viewer__topbar">
         <span class="image-viewer__counter" v-if="props.images.length">
@@ -41,7 +44,8 @@
       <div class="image-viewer__footer">
         <slot name="footer" :image="current" :index="Viewer.currentIndex" />
       </div>
-    </div>
+      </div>
+    </Transition>
   </MadokaMask>
   <!-- ========end======== -->
 </template>
@@ -217,6 +221,28 @@ defineExpose({ open: Viewer.open, close: Viewer.close })
   gap: 16px;
   color: rgba(255, 255, 255, 0.55);
   font-size: 12px;
+}
+
+// 进出场:expo-out 大面板曲线,图先缩后弹;离场快速淡出
+.image-viewer-pop-enter-active {
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .image-viewer__image {
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+.image-viewer-pop-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.image-viewer-pop-enter-from,
+.image-viewer-pop-leave-to {
+  opacity: 0;
+}
+
+.image-viewer-pop-enter-from .image-viewer__image {
+  transform: scale(0.92);
 }
 </style>
 <!-- ========end======== -->
