@@ -48,13 +48,27 @@ const props = withDefaults(
 const modelValue = defineModel({
   default: false,
 })
-const zIndex = useModalState().zIndex
-// 原代码 - Codex 保留
-// const contentZIndex = computed(() => zIndex + 1)
-// useModalState().zIndex++
+// 原代码 - Codex 保留(共享 ref 实时绑定:所有实例的遮罩同值 N、内容同值 N+1——
+// 先开弹窗的内容(N+1)永远高于后开弹窗的遮罩(N),后开的遮罩盖不住先开的内容层)
+// const zIndex = useModalState().zIndex
+// const contentZIndex = computed(() => zIndex.value + 1)
+// zIndex.value++
 // Codex 新增开始
+// 打开时刻取号(实例本地快照):每次弹窗打开时从全局计数器取新号,后开者整体在上,
+// 遮罩能完整压暗下方弹窗的内容;单弹窗场景与原行为一致
+const modalZIndex = useModalState().zIndex
+const zIndex = ref(999999)
 const contentZIndex = computed(() => zIndex.value + 1)
-zIndex.value++
+watch(
+  modelValue,
+  (visible) => {
+    if (visible) {
+      modalZIndex.value++
+      zIndex.value = modalZIndex.value
+    }
+  },
+  { immediate: true },
+)
 // Codex 新增结束
 // 原代码 - Codex 保留
 // const emits = defineEmits<{
