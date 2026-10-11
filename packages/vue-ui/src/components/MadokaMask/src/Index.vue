@@ -36,27 +36,13 @@ const props = withDefaults(
 const modelValue = defineModel({
   default: false,
 })
-// 原代码 - Codex 保留(挂载时取号:层级由挂载顺序决定)
-// const zIndex = useModalState().zIndex
-// const contentZIndex = computed(() => zIndex.value + 1)
-// zIndex.value++
+const zIndex = useModalState().zIndex
+// 原代码 - Codex 保留
+// const contentZIndex = computed(() => zIndex + 1)
+// useModalState().zIndex++
 // Codex 新增开始
-// 打开时取号:层级由打开顺序决定,后开的永远在上。
-// 常驻挂载的多个弹层(如图库预览器与编辑器)在热更新/窗口重开导致挂载顺序翻转时,
-// 挂载取号会让下层盖住上层——点击空白命中错误弹层,关闭顺序错乱
-const modalZIndex = useModalState().zIndex
-const zIndex = ref(999999)
 const contentZIndex = computed(() => zIndex.value + 1)
-watch(
-  modelValue,
-  (visible) => {
-    if (visible) {
-      modalZIndex.value++
-      zIndex.value = modalZIndex.value
-    }
-  },
-  { immediate: true },
-)
+zIndex.value++
 // Codex 新增结束
 // 原代码 - Codex 保留
 // const emits = defineEmits<{

@@ -1,8 +1,9 @@
 <template>
   <!-- =========start========== -->
-  <!-- 大图预览器:基于 MadokaMask 的自治弹层(父级只调 open(index)),键盘 ←/→/Esc,
-       业务信息与操作经具名 slot 上抛(header 右上操作区 / footer 底部信息条) -->
-  <MadokaMask v-model="Viewer.visible" :mask-closable="props.maskClosable">
+  <!-- 大图预览器:基于 MadokaMask 的弹层(父级只调 open(index)),键盘 ←/→/Esc,
+       业务信息与操作经具名 slot 上抛(header 右上操作区 / footer 底部信息条)。
+       Mask 随开随挂、关完即卸(与 useMask/useModal 同生命周期语义,层级永远跟随打开顺序) -->
+  <MadokaMask v-if="Viewer.mounted" v-model="Viewer.visible" :mask-closable="props.maskClosable">
     <!-- 💫 v-if 跟随显隐:Mask 的 content 容器只做定位不管显隐,
          不挂条件的话预览器会常驻全屏(一打开 app 就"弹窗"的根因) -->
     <Transition name="image-viewer-pop">
@@ -66,10 +67,19 @@ const Viewer = (() => {
     // ===== 同步方法 =====
     open: (index = 0) => {
       s.currentIndex = Math.min(Math.max(index, 0), Math.max(props.images.length - 1, 0))
-      s.visible = true
+      // Mask 随开随挂:挂载即取 z 号,和 useMask/useModal 的短命弹层同一套层级语义;
+      // 常驻挂载会在热更新/窗口重开后取号漂移,出现下层盖住上层的关闭顺序错乱
+      s.mounted = true
+      nextTick(() => {
+        s.visible = true
+      })
     },
     close: () => {
       s.visible = false
+      // 离场动画播完再卸载 Mask
+      setTimeout(() => {
+        s.mounted = false
+      }, 400)
     },
     prev: () => {
       if (s.currentIndex > 0) {
@@ -94,6 +104,7 @@ const Viewer = (() => {
 
   const s = reactive({
     visible: false,
+    mounted: false,
     currentIndex: 0,
     ...f,
   })
