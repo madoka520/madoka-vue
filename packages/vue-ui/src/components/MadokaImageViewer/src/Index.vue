@@ -2,7 +2,9 @@
   <!-- =========start========== -->
   <!-- 大图预览器:基于 MadokaMask 的弹层(父级只调 open(index)),键盘 ←/→/Esc,
        业务信息与操作经具名 slot 上抛(header 右上操作区 / footer 底部信息条)。
-       Mask 随开随挂、关完即卸(与 useMask/useModal 同生命周期语义,层级永远跟随打开顺序) -->
+       Mask 随开随挂、关完即卸(与 useMask/useModal 同生命周期语义,层级永远跟随打开顺序)。
+       共享元素模式(模仿 MadoMagiArchive 的编排):先只有图从缩略图原位起飞,
+       飞行结束暗场与顶栏/按钮才浮现——环境后到,不是一拥而上 -->
   <MadokaMask
     v-if="Viewer.mounted"
     v-model="Viewer.visible"
@@ -10,10 +12,10 @@
     mask-background="rgba(12, 6, 10, 0.86)"
     :mask-blur="14"
   >
-    <!-- 💫 v-if 跟随显隐:Mask 的 content 容器只做定位不管显隐,
-         不挂条件的话预览器会常驻全屏(一打开 app 就"弹窗"的根因) -->
-    <Transition name="image-viewer-pop">
-      <div class="image-viewer" v-if="Viewer.visible">
+    <!-- 挂载即渲染(display:none 下 img 仍会加载,飞行期间原图就在预热),
+         显隐交给 Mask 的 content 层 -->
+    <Transition :name="Viewer.ghostMode ? 'image-viewer-none' : 'image-viewer-pop'">
+      <div class="image-viewer">
       <!-- 顶部:序号 + 右侧操作 slot(替换/编辑/删除等业务按钮) -->
       <div class="image-viewer__topbar">
         <span class="image-viewer__counter" v-if="props.images.length">
@@ -49,17 +51,6 @@
         @load="Viewer.imageLoaded = true"
       />
 
-      <!-- 共享元素 ghost:open 传入来源(缩略图位置与 src)时,
-           先用缩略图从原位飞向放大位(模仿 MadoMagiArchive 的 img-zoom),
-           原图加载完成即淡换,加载再慢也有图看 -->
-      <img
-        class="image-viewer__ghost"
-        v-if="Viewer.ghost"
-        :src="Viewer.ghost.src"
-        :style="Viewer.ghostStyle"
-        draggable="false"
-      />
-
       <!-- 底部信息 slot(作者/标签/尺寸等业务数据) -->
       <div class="image-viewer__footer">
         <slot name="footer" :image="current" :index="Viewer.currentIndex" />
@@ -67,6 +58,16 @@
       </div>
     </Transition>
   </MadokaMask>
+
+  <!-- 共享元素 ghost:与 Mask 平级独立存在(起飞阶段背景仍是网格,不该有暗场),
+       从缩略图原位飞向放大位,原图加载完成即淡换 -->
+  <img
+    class="image-viewer__ghost"
+    v-if="Viewer.ghost"
+    :src="Viewer.ghost.src"
+    :style="Viewer.ghostStyle"
+    draggable="false"
+  />
   <!-- ========end======== -->
 </template>
 
@@ -106,37 +107,44 @@ const Viewer = (() => {
 
   const f = {
     // ===== 同步方法 =====
-    // source 传来源(网格缩略图的矩形与 src)时启用共享元素过渡:缩略图从原位飞向放大位
+    // source 传来源(网格缩略图的矩形与 src)时启用共享元素过渡:
+    // 先只有图从原位起飞(0.5s),飞行结束暗场与顶栏/按钮才浮现(环境后到)
     open: (index = 0, source?: { left: number; top: number; width: number; height: number; src: string }) => {
       s.currentIndex = Math.min(Math.max(index, 0), Math.max(props.images.length - 1, 0))
-      // Mask 随开随挂:挂载即取 z 号,和 useMask/useModal 的短命弹层同一套层级语义;
-      // 常驻挂载会在热更新/窗口重开后取号漂移,出现下层盖住上层的关闭顺序错乱
+      // Mask 随开随挂:挂载即取 z 号(visible 仍为 false,遮罩与内容隐藏但原图已在预热加载)
       s.mounted = true
       s.imageLoaded = false
-      nextTick(() => {
-        s.visible = true
-        if (source) {
-          const to = targetRect(s.currentIndex)
-          s.ghost = source
-          // 初始摆在缩略图原位,下一帧过渡到放大位(FLIP)
-          s.ghostStyle = {
-            left: `${source.left}px`,
-            top: `${source.top}px`,
-            width: `${source.width}px`,
-            height: `${source.height}px`,
-            transition: 'none',
-          }
-          requestAnimationFrame(() => {
-            s.ghostStyle = {
-              left: `${to.left}px`,
-              top: `${to.top}px`,
-              width: `${to.width}px`,
-              height: `${to.height}px`,
-              transition: 'all 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
-            }
-          })
+      s.ghostMode = Boolean(source)
+      if (!source) {
+        nextTick(() => {
+          s.visible = true
+        })
+        return
+      }
+
+      const to = targetRect(s.currentIndex)
+      s.ghost = source
+      // 初始摆在缩略图原位,下一帧起飞(FLIP)
+      s.ghostStyle = {
+        left: `${source.left}px`,
+        top: `${source.top}px`,
+        width: `${source.width}px`,
+        height: `${source.height}px`,
+        transition: 'none',
+      }
+      requestAnimationFrame(() => {
+        s.ghostStyle = {
+          left: `${to.left}px`,
+          top: `${to.top}px`,
+          width: `${to.width}px`,
+          height: `${to.height}px`,
+          transition: 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
         }
       })
+      // 飞行结束:暗场、顶栏、按钮、footer 才浮现
+      setTimeout(() => {
+        s.visible = true
+      }, 500)
     },
     close: () => {
       s.visible = false
@@ -144,6 +152,7 @@ const Viewer = (() => {
       setTimeout(() => {
         s.mounted = false
         s.ghost = null
+        s.ghostMode = false
       }, 400)
     },
     prev: () => {
@@ -175,9 +184,10 @@ const Viewer = (() => {
     visible: false,
     mounted: false,
     currentIndex: 0,
-    // 共享元素过渡:ghost 顶位直到原图加载完(imageLoaded)
+    // 共享元素过渡:ghost 顶位直到原图加载完(imageLoaded);ghostMode 下容器不做 pop 动画
     ghost: null as { left: number; top: number; width: number; height: number; src: string } | null,
     ghostStyle: {} as Record<string, string>,
+    ghostMode: false,
     imageLoaded: false,
     ...f,
   })
@@ -361,6 +371,20 @@ defineExpose({ open: Viewer.open, close: Viewer.close })
 
 .image-viewer-pop-enter-from .image-viewer__image {
   transform: scale(0.92);
+}
+
+// ghost 模式:图已由 ghost 飞行到位,容器(暗场上的顶栏/按钮/footer)只做纯淡入
+.image-viewer-none-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.image-viewer-none-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.image-viewer-none-enter-from,
+.image-viewer-none-leave-to {
+  opacity: 0;
 }
 </style>
 <!-- ========end======== -->
