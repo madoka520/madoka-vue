@@ -35,6 +35,13 @@ export interface MadokaButtonLinkProps {
   disabled?: boolean
 }
 
+// Codex 新增开始
+// Glow 皮肤(type="4"):透明直角细边框 + hover 同色光晕,暗色界面工具按钮
+export interface MadokaButtonGlowProps extends MadokaButtonSkinBaseProps {
+  color?: string
+}
+// Codex 新增结束
+
 export interface MadokaButtonEmits {
   (e: 'click', event: MouseEvent): void
 }

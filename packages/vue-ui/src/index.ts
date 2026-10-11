@@ -14,6 +14,10 @@ export { default as useMask } from './components/useMask'
 export { default as useModal } from './components/useModal'
 // Codex 新增结束
 export { default as MadokaInput } from './components/Input/src/Index.vue'
+// Codex 新增开始
+export { default as MadokaImageViewer } from './components/MadokaImageViewer/src/Index.vue'
+// Codex 新增结束
+export { default as MadokaLoading } from './components/MadokaLoading/src/Index.vue'
 export { default as MadokaSelect } from './components/Select/src/Index.vue'
 export { default as MadokaSlidebar } from './components/MadokaSlidebar/src/Index.vue'
 export { default as MadokaSwitch } from './components/MadokaSwitch/src/Index.vue'
@@ -29,6 +33,7 @@ export type {
 // Codex 新增开始
 export type {
   MadokaButtonEmits,
+  MadokaButtonGlowProps,
   MadokaButtonLegacyType,
   MadokaButtonLinkProps,
   MadokaButtonOutlineProps,
@@ -40,6 +45,14 @@ export type {
   MadokaButtonType,
 } from './components/button/src/types'
 export type { MadokaInputProps, MadokaInputType } from './components/Input/src/types'
+// Codex 新增开始
+export type {
+  MadokaImageViewerEmits,
+  MadokaImageViewerImage,
+  MadokaImageViewerProps,
+} from './components/MadokaImageViewer/src/types'
+// Codex 新增结束
+export type { MadokaLoadingProps } from './components/MadokaLoading/src/types'
 export type { MadokaSelectProps } from './components/Select/src/props'
 export type { MadokaDialogEmits, MadokaDialogProps } from './components/MadokaDialog/src/types'
 export type { MadokaMaskEmits, MadokaMaskProps } from './components/MadokaMask/src/types'
