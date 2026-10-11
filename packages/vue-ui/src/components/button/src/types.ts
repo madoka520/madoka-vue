@@ -36,9 +36,11 @@ export interface MadokaButtonLinkProps {
 }
 
 // Codex 新增开始
-// Glow 皮肤(type="4"):透明直角细边框 + hover 同色光晕,暗色界面工具按钮
+// Glow 皮肤(type="4"):透明直角细边框 + hover 同色光晕
 export interface MadokaButtonGlowProps extends MadokaButtonSkinBaseProps {
   color?: string
+  /** 文字色,默认白色(Glow 半透明底在暗色宿主上成立;亮色宿主传深色) */
+  textColor?: string
 }
 // Codex 新增结束
 
