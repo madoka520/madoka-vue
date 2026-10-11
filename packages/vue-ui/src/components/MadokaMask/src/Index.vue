@@ -2,7 +2,17 @@
   <teleport to="body">
     <div>
       <Transition name="fade">
-        <div class="mask" v-show="modelValue" @click="Root.cancel" :style="{ zIndex }"></div>
+        <div
+          class="mask"
+          v-show="modelValue"
+          @click="Root.cancel"
+          :style="[
+            { zIndex, background: props.maskBackground },
+            props.maskBlur
+              ? { backdropFilter: `blur(${props.maskBlur}px)`, '-webkit-backdrop-filter': `blur(${props.maskBlur}px)` }
+              : {},
+          ]"
+        ></div>
       </Transition>
       <!-- Codex 新增开始 -->
       <!-- content 跟随 modelValue 显隐:组件式使用时 slot 内容不能常驻
@@ -30,33 +40,21 @@ const props = withDefaults(
   // Codex 新增结束
   {
     maskClosable: true,
+    maskBackground: 'rgba(0, 0, 0, 0.5)',
+    maskBlur: 0,
   },
 )
 
 const modelValue = defineModel({
   default: false,
 })
-// 原代码 - Codex 保留(z 直接绑共享 ref:所有实例的 mask 层永远同值、content 层永远同值,
-// 先开弹窗的 content(+1)永远压住后开弹窗的 mask,叠加弹层时点击命中错误层)
-// const zIndex = useModalState().zIndex
-// const contentZIndex = computed(() => zIndex.value + 1)
-// zIndex.value++
+const zIndex = useModalState().zIndex
+// 原代码 - Codex 保留
+// const contentZIndex = computed(() => zIndex + 1)
+// useModalState().zIndex++
 // Codex 新增开始
-// 每个实例持有本地快照,打开时从全局计数器取新号:最近打开的弹窗整体在上。
-// 单弹窗场景与原行为一致(打开即取号);图库预览器→编辑器的叠加场景从此层级正确
-const modalZIndex = useModalState().zIndex
-const zIndex = ref(999999)
 const contentZIndex = computed(() => zIndex.value + 1)
-watch(
-  modelValue,
-  (visible) => {
-    if (visible) {
-      modalZIndex.value++
-      zIndex.value = modalZIndex.value
-    }
-  },
-  { immediate: true },
-)
+zIndex.value++
 // Codex 新增结束
 // 原代码 - Codex 保留
 // const emits = defineEmits<{

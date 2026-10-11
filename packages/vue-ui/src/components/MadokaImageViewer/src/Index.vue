@@ -3,11 +3,17 @@
   <!-- 大图预览器:基于 MadokaMask 的弹层(父级只调 open(index)),键盘 ←/→/Esc,
        业务信息与操作经具名 slot 上抛(header 右上操作区 / footer 底部信息条)。
        Mask 随开随挂、关完即卸(与 useMask/useModal 同生命周期语义,层级永远跟随打开顺序) -->
-  <MadokaMask v-if="Viewer.mounted" v-model="Viewer.visible" :mask-closable="props.maskClosable">
+  <MadokaMask
+    v-if="Viewer.mounted"
+    v-model="Viewer.visible"
+    :mask-closable="props.maskClosable"
+    mask-background="rgba(12, 6, 10, 0.86)"
+    :mask-blur="14"
+  >
     <!-- 💫 v-if 跟随显隐:Mask 的 content 容器只做定位不管显隐,
          不挂条件的话预览器会常驻全屏(一打开 app 就"弹窗"的根因) -->
     <Transition name="image-viewer-pop">
-      <div class="image-viewer" v-if="Viewer.visible" @click.self="Viewer.close">
+      <div class="image-viewer" v-if="Viewer.visible">
       <!-- 顶部:序号 + 右侧操作 slot(替换/编辑/删除等业务按钮) -->
       <div class="image-viewer__topbar">
         <span class="image-viewer__counter" v-if="props.images.length">
@@ -141,17 +147,24 @@ defineExpose({ open: Viewer.open, close: Viewer.close })
 </script>
 
 <style scoped lang="less">
-// 预览器是暗场:铺满视口的容器叠在 Mask 黑罩之上,再加一层暗化与毛玻璃
+// 纯布局容器:顶栏/按钮/图片的定位骨架。
+// 无背景无事件——暗化毛玻璃由 Mask 的 maskBackground/maskBlur 提供,
+// 点击穿透到遮罩层(无叠加关自己,有叠加命中上层弹窗的遮罩,顺序天然正确)
 .image-viewer {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(12, 6, 10, 0.72);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   user-select: none;
+  pointer-events: none;
+}
+
+// 真正要交互的元素单独恢复接收点击
+.image-viewer__topbar,
+.image-viewer__btn,
+.image-viewer__image {
+  pointer-events: auto;
 }
 
 .image-viewer__topbar {
