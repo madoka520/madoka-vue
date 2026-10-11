@@ -36,13 +36,27 @@ const props = withDefaults(
 const modelValue = defineModel({
   default: false,
 })
-const zIndex = useModalState().zIndex
-// 原代码 - Codex 保留
-// const contentZIndex = computed(() => zIndex + 1)
-// useModalState().zIndex++
+// 原代码 - Codex 保留(z 直接绑共享 ref:所有实例的 mask 层永远同值、content 层永远同值,
+// 先开弹窗的 content(+1)永远压住后开弹窗的 mask,叠加弹层时点击命中错误层)
+// const zIndex = useModalState().zIndex
+// const contentZIndex = computed(() => zIndex.value + 1)
+// zIndex.value++
 // Codex 新增开始
+// 每个实例持有本地快照,打开时从全局计数器取新号:最近打开的弹窗整体在上。
+// 单弹窗场景与原行为一致(打开即取号);图库预览器→编辑器的叠加场景从此层级正确
+const modalZIndex = useModalState().zIndex
+const zIndex = ref(999999)
 const contentZIndex = computed(() => zIndex.value + 1)
-zIndex.value++
+watch(
+  modelValue,
+  (visible) => {
+    if (visible) {
+      modalZIndex.value++
+      zIndex.value = modalZIndex.value
+    }
+  },
+  { immediate: true },
+)
 // Codex 新增结束
 // 原代码 - Codex 保留
 // const emits = defineEmits<{
