@@ -1,6 +1,9 @@
 export interface MadokaImageViewerImage {
   url: string
   name?: string
+  /** 原始宽高:open 传来源时用于计算共享元素过渡的精确目标框 */
+  width?: number
+  height?: number
 }
 
 export interface MadokaImageViewerProps {

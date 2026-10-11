@@ -37,13 +37,26 @@
         <i class="mdi mdi-chevron-right" />
       </button>
 
-      <!-- 大图:key 换 url 才重新加载 -->
+      <!-- 大图:key 换 url 才重新加载;加载完成前由共享元素 ghost 顶位 -->
       <img
         class="image-viewer__image"
         v-if="current"
         :key="current.url"
         :src="current.url"
         :alt="current.name ?? ''"
+        draggable="false"
+        :class="{ 'is-loaded': Viewer.imageLoaded }"
+        @load="Viewer.imageLoaded = true"
+      />
+
+      <!-- 共享元素 ghost:open 传入来源(缩略图位置与 src)时,
+           先用缩略图从原位飞向放大位(模仿 MadoMagiArchive 的 img-zoom),
+           原图加载完成即淡换,加载再慢也有图看 -->
+      <img
+        class="image-viewer__ghost"
+        v-if="Viewer.ghost"
+        :src="Viewer.ghost.src"
+        :style="Viewer.ghostStyle"
         draggable="false"
       />
 
@@ -69,15 +82,60 @@ const props = withDefaults(defineProps<MadokaImageViewerProps>(), {
 const emits = defineEmits<MadokaImageViewerEmits>()
 
 const Viewer = (() => {
+  // 目标框:视口中央 88%×84% 区域内按图片宽高比 contain(与 .image-viewer__image 的 max 约束一致)
+  const targetRect = (index: number) => {
+    const img = props.images[index]
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const boxW = vw * 0.88
+    const boxH = vh * 0.84
+    const boxL = vw * 0.06
+    const boxT = vh * 0.08
+    if (!img?.width || !img?.height) {
+      return { left: boxL, top: boxT, width: boxW, height: boxH }
+    }
+    const ratio = img.width / img.height
+    let w = boxW
+    let h = w / ratio
+    if (h > boxH) {
+      h = boxH
+      w = h * ratio
+    }
+    return { left: boxL + (boxW - w) / 2, top: boxT + (boxH - h) / 2, width: w, height: h }
+  }
+
   const f = {
     // ===== 同步方法 =====
-    open: (index = 0) => {
+    // source 传来源(网格缩略图的矩形与 src)时启用共享元素过渡:缩略图从原位飞向放大位
+    open: (index = 0, source?: { left: number; top: number; width: number; height: number; src: string }) => {
       s.currentIndex = Math.min(Math.max(index, 0), Math.max(props.images.length - 1, 0))
       // Mask 随开随挂:挂载即取 z 号,和 useMask/useModal 的短命弹层同一套层级语义;
       // 常驻挂载会在热更新/窗口重开后取号漂移,出现下层盖住上层的关闭顺序错乱
       s.mounted = true
+      s.imageLoaded = false
       nextTick(() => {
         s.visible = true
+        if (source) {
+          const to = targetRect(s.currentIndex)
+          s.ghost = source
+          // 初始摆在缩略图原位,下一帧过渡到放大位(FLIP)
+          s.ghostStyle = {
+            left: `${source.left}px`,
+            top: `${source.top}px`,
+            width: `${source.width}px`,
+            height: `${source.height}px`,
+            transition: 'none',
+          }
+          requestAnimationFrame(() => {
+            s.ghostStyle = {
+              left: `${to.left}px`,
+              top: `${to.top}px`,
+              width: `${to.width}px`,
+              height: `${to.height}px`,
+              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+            }
+          })
+        }
       })
     },
     close: () => {
@@ -85,17 +143,22 @@ const Viewer = (() => {
       // 离场动画播完再卸载 Mask
       setTimeout(() => {
         s.mounted = false
+        s.ghost = null
       }, 400)
     },
     prev: () => {
       if (s.currentIndex > 0) {
         s.currentIndex--
+        s.imageLoaded = false
+        s.ghost = null
         emits('change', s.currentIndex)
       }
     },
     next: () => {
       if (s.currentIndex < props.images.length - 1) {
         s.currentIndex++
+        s.imageLoaded = false
+        s.ghost = null
         emits('change', s.currentIndex)
       }
     },
@@ -112,6 +175,10 @@ const Viewer = (() => {
     visible: false,
     mounted: false,
     currentIndex: 0,
+    // 共享元素过渡:ghost 顶位直到原图加载完(imageLoaded)
+    ghost: null as { left: number; top: number; width: number; height: number; src: string } | null,
+    ghostStyle: {} as Record<string, string>,
+    imageLoaded: false,
     ...f,
   })
 
@@ -122,6 +189,18 @@ const Viewer = (() => {
   onUnmounted(() => {
     window.removeEventListener('keydown', s.onKeydown)
   })
+
+  // 原图就绪即撤 ghost(换图/关闭时同步清理)
+  watch(
+    () => s.imageLoaded,
+    (loaded) => {
+      if (loaded) {
+        setTimeout(() => {
+          s.ghost = null
+        }, 60)
+      }
+    },
+  )
 
   return s
 })()
@@ -232,6 +311,21 @@ defineExpose({ open: Viewer.open, close: Viewer.close })
   object-fit: contain;
   border: 1.5px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  // 加载完成前保持透明,由共享元素 ghost 顶位;就绪后淡入换防
+  opacity: 0;
+  transition: opacity 0.25s ease;
+
+  &.is-loaded {
+    opacity: 1;
+  }
+}
+
+// 共享元素 ghost:缩略图从原位飞向放大位的过渡层,原图就绪即撤
+.image-viewer__ghost {
+  position: fixed;
+  object-fit: fill;
+  z-index: 1000002;
+  pointer-events: none;
 }
 
 .image-viewer__footer {
