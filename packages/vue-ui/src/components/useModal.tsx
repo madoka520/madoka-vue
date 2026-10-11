@@ -21,6 +21,10 @@ export type MadokaModalConfirmOptions = {
   hiddenCancel?: boolean
   okText?: string
   footer?: JSX.Element | string
+  // Codex 新增开始
+  // 透传给 MadokaDialog 的弹窗背景(暗色界面传深色)
+  background?: string
+  // Codex 新增结束
 }
 
 export default (() => {
@@ -58,6 +62,7 @@ export default (() => {
         okText={options.okText}
         width={options.width}
         hiddenCancel={options.hiddenCancel}
+        background={options.background}
         onOk={async () => {
           try {
             await state.onOk?.()
