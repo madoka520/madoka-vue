@@ -132,7 +132,7 @@ const Viewer = (() => {
               top: `${to.top}px`,
               width: `${to.width}px`,
               height: `${to.height}px`,
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+              transition: 'all 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
             }
           })
         }
@@ -190,14 +190,14 @@ const Viewer = (() => {
     window.removeEventListener('keydown', s.onKeydown)
   })
 
-  // 原图就绪即撤 ghost(换图/关闭时同步清理)
+  // 原图就绪后等淡入起来再撤 ghost,双段渐变更平滑
   watch(
     () => s.imageLoaded,
     (loaded) => {
       if (loaded) {
         setTimeout(() => {
           s.ghost = null
-        }, 60)
+        }, 160)
       }
     },
   )
@@ -313,7 +313,7 @@ defineExpose({ open: Viewer.open, close: Viewer.close })
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   // 加载完成前保持透明,由共享元素 ghost 顶位;就绪后淡入换防
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s ease;
 
   &.is-loaded {
     opacity: 1;
