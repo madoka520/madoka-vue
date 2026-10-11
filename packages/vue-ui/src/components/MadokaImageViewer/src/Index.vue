@@ -6,7 +6,7 @@
     <!-- 💫 v-if 跟随显隐:Mask 的 content 容器只做定位不管显隐,
          不挂条件的话预览器会常驻全屏(一打开 app 就"弹窗"的根因) -->
     <Transition name="image-viewer-pop">
-      <div class="image-viewer" v-if="Viewer.visible">
+      <div class="image-viewer" v-if="Viewer.visible" @click.self="Viewer.close">
       <!-- 顶部:序号 + 右侧操作 slot(替换/编辑/删除等业务按钮) -->
       <div class="image-viewer__topbar">
         <span class="image-viewer__counter" v-if="props.images.length">

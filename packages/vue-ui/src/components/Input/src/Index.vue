@@ -38,6 +38,8 @@ const style = computed(() => ({
 </script>
 
 <style scoped lang="less">
+/* 原代码 - Codex 保留(旧版亮色圆角形态;其中 rgba(255, 2555, 255, 0.5) 的 2555 是笔误,
+   背景声明一直未生效)
 // 定义色值，圆的代表色
 @madoka-pink: #ffb7d5;
 @madoka-dark-pink: #ff69b4;
@@ -74,4 +76,41 @@ const style = computed(() => ({
     }
   }
 }
+*/
+
+// =========start==========
+// 默认形态(2026-10 定稿):直角、透明暗底、细边框,聚焦绽放粉光
+@pink-primary: #ffb7c5;
+@pink-dark: #ff85a2;
+@pink-glow: rgba(255, 126, 201, 0.55);
+
+.madoka-input-container {
+  position: relative;
+  width: 100%;
+
+  .madoka-input {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 183, 206, 0.06);
+    border: 1.5px solid rgba(255, 183, 197, 0.4);
+    border-radius: 0; // 直角是默认形态
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &::placeholder {
+      color: #9e9e9e;
+      font-style: normal;
+    }
+
+    &:focus {
+      border-color: @pink-dark;
+      background: rgba(255, 183, 206, 0.1);
+      box-shadow: 0 0 8px @pink-glow;
+    }
+  }
+}
+// ========end========
 </style>
