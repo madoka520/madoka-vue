@@ -22,6 +22,9 @@ export { default as MadokaSelect } from './components/Select/src/Index.vue'
 export { default as MadokaSlidebar } from './components/MadokaSlidebar/src/Index.vue'
 export { default as MadokaSwitch } from './components/MadokaSwitch/src/Index.vue'
 export { default as MadokaTab } from './components/MadokaTab/src/Index.vue'
+// Codex 新增开始
+export { default as MadokaTagGroup } from './components/MadokaTagGroup/src/Index.vue'
+// Codex 新增结束
 export type {
   MadokaInputValue,
   MadokaOption,
@@ -78,4 +81,6 @@ export type { MadokaContextMenuItem, MadokaContextMenuSize } from './components/
 export type { MadokaMaskClose, MadokaMaskContent } from './components/useMask'
 export type { MadokaModalConfirmOptions } from './components/useModal'
 export type { Variant as MadokaButtonVariant } from './components/button/src/button'
+// Codex 新增开始
+export type { MadokaTagGroupProps, MadokaTagItem } from './components/MadokaTagGroup/src/props'
 // Codex 新增结束

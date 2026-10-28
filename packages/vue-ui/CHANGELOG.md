@@ -1,5 +1,12 @@
 # @madoka520/vue-ui
 
+## 1.1.21
+
+### Patch Changes
+
+- afac937: MadokaBtn 公共样式去重：user-select: none 四处重复规则合并进 .madoka-btn-base（各变体行为不变）
+- feat: 新增 MadokaTagGroup 标签胶囊组组件——多选胶囊 + 计数角标,样式经 CSS 变量配置(标签管理/标签筛选等场景复用)
+
 ## 1.1.4
 
 ### Patch Changes
