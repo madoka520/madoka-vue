@@ -8,6 +8,8 @@ export interface MadokaTagItem {
 
 export interface MadokaTagGroupProps {
   tags?: MadokaTagItem[]
+  /** 禁用项名称(功能性标签等):不可选中,展示为禁用态 */
+  disabledNames?: string[]
   /** 胶囊背景,默认透明 */
   background?: string
   /** 边框色,默认 #e0e0e0 */

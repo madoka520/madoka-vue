@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.22
+
+### Patch Changes
+
+- feat(MadokaTagGroup): 支持 disabledNames 禁用项——功能性标签不可选中,禁用态半透明+锁图标
+
 ## 1.1.21
 
 ### Patch Changes
