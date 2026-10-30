@@ -40,6 +40,9 @@ const state = reactive({
   // Codex 新增开始
   items: [] as MadokaContextMenuItem[],
   size: { ...DEFAULT_SIZE } as Required<MadokaContextMenuSize>,
+  // 懒初始化的 DOM 是否已就绪:必须放进 reactive,
+  // 否则下方 watchEffect 首跑时 container 为 null、收集不到任何依赖,之后永不重跑,菜单永远渲染不出来
+  domReady: false,
   // Codex 新增结束
 })
 
@@ -108,6 +111,8 @@ const ensureContextMenuDom = () => {
   container.addEventListener('mouseover', handleMouseOver)
   document.addEventListener('click', hide)
   initialized = true
+  // DOM 就绪写入响应式状态,触发 watchEffect 重跑并建立对 visible/items 等的依赖
+  state.domReady = true
 }
 // Codex 新增结束
 
@@ -222,7 +227,12 @@ watchEffect(() => {
   // 原代码 - Codex 保留
   // render(Menu(), container)
   // Codex 新增开始
-  if (container) render(Menu(), container)
+  // if (container) render(Menu(), container)
+  // =========start==========
+  // 修复:先读响应式 domReady 再判断 container——首跑时 container 为 null 且非响应式,
+  // 原守卫会收集不到任何依赖导致 effect 永不重跑(懒初始化后菜单不渲染的根因)
+  if (state.domReady && container) render(Menu(), container)
+  // ========end========
   // Codex 新增结束
 })
 
@@ -245,6 +255,10 @@ const destroy = () => {
   style = null
   initialized = false
   state.visible = false
+  // =========start==========
+  // DOM 已销毁:同步复位就绪标记,让 watchEffect 守卫重新关上
+  state.domReady = false
+  // ========end========
 }
 
 export const useContextMenu = () => ({ show, hide, destroy })
