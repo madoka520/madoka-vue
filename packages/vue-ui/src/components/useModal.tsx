@@ -42,6 +42,11 @@ export default (() => {
       content: options.content ?? null,
       onOk: options.onOk,
       onCancel: options.onCancel,
+      // Codex 新增开始
+      // onOk 异步执行期间确定按钮转 loading(确定/取消都禁用),完成后自动关窗——
+      // 否则耗时操作(网络请求)期间弹窗毫无反馈,用户会以为没点上而狂点
+      okLoading: false,
+      // Codex 新增结束
     })
 
     const container = document.createElement("div")
@@ -63,12 +68,19 @@ export default (() => {
         width={options.width}
         hiddenCancel={options.hiddenCancel}
         background={options.background}
+        okLoading={state.okLoading}
         onOk={async () => {
+          // Codex 新增开始
+          state.okLoading = true
+          // Codex 新增结束
           try {
             await state.onOk?.()
             close()
           } catch (error: any) {
             if (error.message) message.error(error.message)
+            // Codex 新增开始
+            state.okLoading = false // 失败时弹窗保留让用户重试
+            // Codex 新增结束
           }
         }}
         onCancel={() => {

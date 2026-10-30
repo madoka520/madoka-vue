@@ -11,6 +11,8 @@ export interface MadokaDialogProps {
   unuseModel?: boolean
   background?: string
   hiddenCancel?: boolean
+  /** 确定按钮 loading 态(旋转图标+禁用);useModal.confirm 在 onOk 异步时自动驱动 */
+  okLoading?: boolean
 }
 
 export interface MadokaDialogEmits {

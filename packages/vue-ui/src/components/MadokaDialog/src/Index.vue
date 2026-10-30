@@ -21,14 +21,20 @@
             @click="Root.cancel"
             v-if="!hiddenCancel"
             :text="cancelText"
+            :disabled="okLoading"
             variant="outlined"
           />
+          <!-- ========start======== 确定按钮 loading 态:旋转图标+禁用(useModal.confirm 异步 onOk 时驱动) -->
           <madoka-btn
             type="3"
             @click="Root.ok"
-            :text="okText"
+            :disabled="okLoading"
             variant="outlined"
-          />
+          >
+            <i v-if="okLoading" class="mdi mdi-loading is-spinning" />
+            <span>{{ okText }}</span>
+          </madoka-btn>
+          <!-- ========end======== -->
         </slot>
       </footer>
     </div>
@@ -72,6 +78,7 @@ const props = withDefaults(
     // Codex 新增结束
     background: 'rgba(255, 240, 245, 0.7)',
     hiddenCancel: false,
+    okLoading: false,
   },
 )
 

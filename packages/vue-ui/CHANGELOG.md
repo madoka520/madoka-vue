@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.24
+
+### Patch Changes
+
+- feat(MadokaDialog/useModal): 确定按钮 loading 态——useModal.confirm 的 onOk 异步执行期间确定/取消禁用+旋转图标,完成自动关窗,失败保留重试
+
 ## 1.1.23
 
 ### Patch Changes
