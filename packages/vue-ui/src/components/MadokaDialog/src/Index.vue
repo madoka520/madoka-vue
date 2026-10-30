@@ -97,6 +97,22 @@ const modelValue = defineModel({
 const emits = defineEmits<MadokaDialogEmits>()
 // Codex 新增结束
 
+// ========start======== Esc 关闭:模块级弹窗栈(后开者在栈顶,Esc 只关栈顶那层)。
+// 监听挂 window 捕获阶段——先于业务层容器(如图库详情视图)的 keydown 触发,
+// stopPropagation 拦截下沉,避免 Esc 同时关掉弹窗底下的视图
+const escStack: { onEsc: () => void }[] = []
+
+const onKeydown = (e: KeyboardEvent) => {
+  if (e.key !== 'Escape') return
+  if (escStack[escStack.length - 1]?.onEsc !== onKeydownEsc) return // 非栈顶不响应
+  e.preventDefault()
+  e.stopPropagation()
+  onKeydownEsc()
+}
+
+const onKeydownEsc = () => Root.cancel()
+// ========end========
+
 const Root = (() => {
   const setWatcher = () => {
     watch(modelValue, (visible) => {
@@ -105,6 +121,10 @@ const Root = (() => {
 
       if (visible) {
         /* —— 打开 —— */
+        // ========start======== Esc 关闭:入栈 + 挂捕获监听
+        escStack.push({ onEsc: onKeydownEsc })
+        window.addEventListener('keydown', onKeydown, true)
+        // ========end========
         nextTick(async () => {
           // 清理上次可能残留的离场类:transitionend 丢失时 leave-active 不被移除,
           // 与 enter-active 并存且 CSS 顺序靠后会赢得 opacity:0,弹窗永久隐形
@@ -127,6 +147,11 @@ const Root = (() => {
       } else {
         /* —— 关闭 —— */
 
+        // ========start======== Esc 关闭:出栈 + 摘监听(与打开对称)
+        const idx = escStack.findIndex((item) => item.onEsc === onKeydownEsc)
+        if (idx >= 0) escStack.splice(idx, 1)
+        window.removeEventListener('keydown', onKeydown, true)
+        // ========end========
         nextTick(() => {
           // 移除打开状态类
           el.classList.remove('enter-active')
@@ -177,6 +202,14 @@ const Root = (() => {
   setWatcher()
   return s
 })()
+
+// ========start======== 卸载兜底:父级 v-if 直接拆组件时,栈与监听不残留
+onUnmounted(() => {
+  const idx = escStack.findIndex((item) => item.onEsc === onKeydownEsc)
+  if (idx >= 0) escStack.splice(idx, 1)
+  window.removeEventListener('keydown', onKeydown, true)
+})
+// ========end========
 </script>
 <style lang="less" scoped>
 .dialog__overlay {

@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.25
+
+### Patch Changes
+
+- feat(MadokaDialog): Esc 关闭弹窗——window 捕获阶段监听 + 弹窗栈保证只关最顶层,拦截下沉避免 Esc 同时触发弹窗底下视图的关闭逻辑
+
 ## 1.1.24
 
 ### Patch Changes
