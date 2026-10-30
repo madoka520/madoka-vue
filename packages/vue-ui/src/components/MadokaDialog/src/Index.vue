@@ -186,7 +186,8 @@ const Root = (() => {
     })
   }
 
-  const cancel = async (e: Event) => {
+  // ========start======== 参数可选:Esc 关闭路径无事件对象可传(emits 类型本就允许 event?: Event)
+  const cancel = async (e?: Event) => {
     modelValue.value = false
     emits('cancel', e)
   }
