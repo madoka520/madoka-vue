@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.1.23
+
+### Patch Changes
+
+- feat(MadokaBtn): outline 皮肤实现 disabled 禁用态(半透明+拦截交互)——此前 disabled 透传到 span 是无效属性
+
 ## 1.1.22
 
 ### Patch Changes

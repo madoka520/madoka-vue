@@ -26,6 +26,8 @@ export interface MadokaButtonSubmitProps extends MadokaButtonSkinBaseProps {}
 
 export interface MadokaButtonOutlineProps extends MadokaButtonSkinBaseProps {
   color?: string
+  /** 禁用态(半透明+拦截交互) */
+  disabled?: boolean
 }
 
 export interface MadokaButtonLinkProps {

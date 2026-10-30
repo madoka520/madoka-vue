@@ -1,5 +1,5 @@
 <template>
-  <span class="outline-btn madoka-btn-base">
+  <span :class="['outline-btn', 'madoka-btn-base', { 'is-disabled': disabled }]">
     <slot>
       {{ text }}
     </slot>
@@ -23,6 +23,12 @@ const props = withDefaults(
 </script>
 <style scoped>
 .outline-btn {
+  /* 禁用态:半透明+拦截交互(wrapper 的 disabled 透传到此生效) */
+  &.is-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
   /* 基础：透明背景 + 粉色细边框 */
   padding: 10px 30px;
   font-size: 14px;
