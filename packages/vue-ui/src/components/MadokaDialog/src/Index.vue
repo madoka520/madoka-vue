@@ -443,8 +443,10 @@ onUnmounted(() => {
   opacity: 1 !important;
   /* 原代码 - 保留 */
   /* transition: all 0.3s cubic-bezier(0.1, 1, 0.4, 1); */
-  // 💫 弹跳曲线:从鼠标位置绽放开,像魔法发动
-  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* 原代码 - 保留(过冲 1.275 回弹太夸张) */
+  /* transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); */
+  // 💫 弹跳曲线:从鼠标位置绽放开;2026-11-05 过冲 1.275→1.1,回弹收敛到约 10%,只留轻轻一沉的手感
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
 .dialog__overlay.leave-active {
