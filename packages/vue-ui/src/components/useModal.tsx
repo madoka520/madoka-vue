@@ -24,6 +24,16 @@ export type MadokaModalConfirmOptions = {
   // Codex 新增开始
   // 透传给 MadokaDialog 的弹窗背景(暗色界面传深色)
   background?: string
+  // Codex 新增开始 (2026-11-05 可配置外观,与 MadokaDialogProps 同步)
+  /** 圆角;数字按 px;默认 0(直角) */
+  radius?: number | string
+  /** 边框:false 关闭;字符串=颜色;对象={ color, width } */
+  border?: false | string | { color?: string; width?: number }
+  /** 主题预设:'dark' | 'light' 整套配色;显式 background 优先 */
+  theme?: 'dark' | 'light'
+  /** 阴影光晕:false/'none' 关;字符串=完整 CSS box-shadow;对象={ color, strength } */
+  shadow?: false | string | { color?: string; strength?: number }
+  // Codex 新增结束
   // Codex 新增结束
 }
 
@@ -61,6 +71,7 @@ export default (() => {
     }
 
     const vnode = createVNode(() => (
+      // ========start======== 可配置外观透传(radius/border/theme/shadow,2026-11-05) ========
       <MadokaDialog
         v-model={state.visible}
         title={state.title}
@@ -68,6 +79,10 @@ export default (() => {
         width={options.width}
         hiddenCancel={options.hiddenCancel}
         background={options.background}
+        radius={options.radius}
+        border={options.border}
+        theme={options.theme}
+        shadow={options.shadow}
         okLoading={state.okLoading}
         onOk={async () => {
           // Codex 新增开始

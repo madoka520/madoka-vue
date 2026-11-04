@@ -11,7 +11,7 @@
   <!-- ========end======== -->
     <div
       class="dialog__overlay"
-      :style="{ minWidth: width, minHeight: height, maxHeight, background }"
+      :style="panelStyle"
       @click.stop
       ref="overlayRef"
     >
@@ -102,7 +102,9 @@ const props = withDefaults(
     // ========start========
     // 2026-11 重设计:默认改暗色玻璃——桌面壁纸 overlay 上亮色玻璃块太突兀,
     // 暗底配白字也把"Dark Dialog 内容文字不可见"从默认值层面根除;要亮底仍可传 background 覆盖
-    background: 'rgba(22, 12, 18, 0.78)',
+    // background: 'rgba(22, 12, 18, 0.78)',
+    // 2026-11-05 可配置外观:background 默认值移出 props,改由 panelStyle 兜底——
+    // 否则 props 默认值永远压过 theme 预设的底色(显式 background > theme > 暗色玻璃,行为不变)
     // 遮罩同步降不透明度+轻 blur:壁画柔化退后,弹层才有"浮"起来的层次
     maskBackground: 'rgba(0, 0, 0, 0.35)',
     maskBlur: 6,
@@ -113,6 +115,70 @@ const props = withDefaults(
 )
 
 const overlayRef = useTemplateRef('overlayRef')
+
+// ========start======== 可配置外观(2026-11-05 勾选定稿):radius/border/theme/shadow
+// 归一成一份面板内联样式,全部缺省时不写对应键,让静态 CSS(1.1.27 现状)继续生效——默认值零漂移
+import type { CSSProperties } from 'vue'
+
+// 主题预设:一键整套配色,免得每个界面手拼 rgba;显式 background 优先于预设底色
+const THEME_PRESETS: Record<'dark' | 'light', { background: string; titleColor: string; contentColor: string }> = {
+  dark: {
+    background: 'rgba(22, 12, 18, 0.78)',
+    titleColor: '#ff8fab',
+    contentColor: 'rgba(255, 255, 255, 0.88)',
+  },
+  light: {
+    background: 'rgba(255, 240, 245, 0.7)',
+    titleColor: '#ff8fab',
+    contentColor: '#4a3a40',
+  },
+}
+
+// 边框归一:false→关;字符串→当颜色;对象→逐项配;返回 undefined 表示走 CSS 默认(细粉 1.5px)
+const resolveBorder = (): string | undefined => {
+  const b = props.border
+  if (b === undefined) return undefined
+  if (b === false) return 'none'
+  const o = typeof b === 'string' ? { color: b } : b
+  return `${o.width ?? 1.5}px solid ${o.color ?? 'rgba(255, 183, 197, 0.45)'}`
+}
+
+// 光晕归一:字符串→完整 CSS box-shadow 直传;对象→按色生成三层(近粉晕+中粉投影+外层黑压场),strength 缩放扩散
+const makeGlow = (color: string, strength = 1): string =>
+  `0 0 ${18 * strength}px ${color}, 0 ${8 * strength}px ${32 * strength}px ${color}, 0 24px 80px rgba(0, 0, 0, 0.45)`
+
+const resolveShadow = (): string | undefined => {
+  const s = props.shadow
+  if (s === undefined) return undefined
+  if (s === false || s === 'none') return 'none'
+  if (typeof s === 'string') return s
+  return makeGlow(s.color ?? 'rgba(255, 126, 185, 0.3)', s.strength ?? 1)
+}
+
+const panelStyle = computed<CSSProperties>(() => {
+  const preset = props.theme ? THEME_PRESETS[props.theme] : undefined
+  const style: CSSProperties = {
+    minWidth: props.width,
+    minHeight: props.height,
+    maxHeight: props.maxHeight,
+    // 优先级:显式 background > theme 预设 > 暗色玻璃兜底(与 1.1.27 默认完全一致)
+    background: props.background ?? preset?.background ?? 'rgba(22, 12, 18, 0.78)',
+  }
+  // 主题文字色走 CSS 变量下发,静态 CSS 里用 var() 兜底——不选主题时样式零变化
+  if (preset) {
+    style['--dlg-title'] = preset.titleColor
+    style['--dlg-content'] = preset.contentColor
+  }
+  if (props.radius !== undefined) {
+    style.borderRadius = typeof props.radius === 'number' ? `${props.radius}px` : props.radius
+  }
+  const border = resolveBorder()
+  if (border !== undefined) style.border = border
+  const shadow = resolveShadow()
+  if (shadow !== undefined) style.boxShadow = shadow
+  return style
+})
+// ========end========
 
 const mouse = useMouse()
 const modelValue = defineModel({
@@ -274,9 +340,12 @@ onUnmounted(() => {
     /* 原代码 - 保留 */
     /* padding: 20px; */
     /* font-weight: bold; */
+    /* color: #ff8fab; */
     padding: 14px 20px;
     font-weight: 600;
-    color: #ff8fab;
+    // ========start======== 主题文字色走 CSS 变量,panelStyle 下发;不选主题时回落到 1.1.27 原值
+    color: var(--dlg-title, #ff8fab);
+    // ========end========
     letter-spacing: 2px;
     // ✨ 细粉分隔线:靠线成形,不再靠粗标题块撑场面
     border-bottom: 1px solid rgba(255, 183, 197, 0.22);
@@ -291,7 +360,8 @@ onUnmounted(() => {
     justify-content: center;
     min-height: 0;
     // ========start======== 暗底白字:内容文字不再吃宿主颜色,任何界面里都可见
-    color: rgba(255, 255, 255, 0.88);
+    // (2026-11-05 起 var() 兜底,theme 预设可换色,不选主题值不变)
+    color: var(--dlg-content, rgba(255, 255, 255, 0.88));
     // ========end========
   }
 
