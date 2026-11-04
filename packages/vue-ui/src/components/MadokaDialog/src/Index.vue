@@ -410,8 +410,10 @@ onUnmounted(() => {
     overflow: auto;
     /* 原代码 - 保留 */
     /* padding: 0 20px; */
-    // 2026-11-05 内容区补上下内边距,短文案不再贴着分隔线(与左右同为 20px)
-    padding: 20px;
+    /* padding: 20px; */
+    // 2026-11-05 内容区补上下内边距,短文案不再贴着分隔线;
+    // 上下取 14px 对齐 header/footer 的垂直节奏,左右保持 20px
+    padding: 14px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
