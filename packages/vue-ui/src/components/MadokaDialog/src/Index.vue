@@ -34,7 +34,9 @@
             :disabled="okLoading"
             variant="outlined"
           /> -->
-          <!-- ========start======== 取消按钮降为灰白弱化色,确定保持热粉——主次分明,不再两个粉按钮打架 -->
+          <!-- ========start======== 取消按钮降为弱化色,确定保持强调色——主次分明,不再两个粉按钮打架 -->
+          <!-- 2026-11-05 起按钮色随色板联动:粉乳默认深字按钮,dark 预设回落白字(硬编码色注释保留) -->
+          <!-- color="rgba(255, 255, 255, 0.55)" -->
           <madoka-btn
             type="3"
             @click="Root.cancel"
@@ -42,16 +44,19 @@
             :text="cancelText"
             :disabled="okLoading"
             variant="outlined"
-            color="rgba(255, 255, 255, 0.55)"
+            :color="palette.cancelColor"
           />
           <!-- ========end======== -->
           <!-- ========start======== 确定按钮 loading 态:旋转图标+禁用(useModal.confirm 异步 onOk 时驱动) -->
+          <!-- ========start======== 确定按钮色随色板(粉乳默认深粉 #d94f7e,dark 预设热粉 #ff7eb9) -->
           <madoka-btn
             type="3"
             @click="Root.ok"
             :disabled="okLoading"
             variant="outlined"
+            :color="palette.okColor"
           >
+          <!-- ========end======== -->
             <i v-if="okLoading" class="mdi mdi-loading is-spinning" />
             <span>{{ okText }}</span>
           </madoka-btn>
@@ -117,30 +122,77 @@ const props = withDefaults(
 const overlayRef = useTemplateRef('overlayRef')
 
 // ========start======== 可配置外观(2026-11-05 勾选定稿):radius/border/theme/shadow
-// 归一成一份面板内联样式,全部缺省时不写对应键,让静态 CSS(1.1.27 现状)继续生效——默认值零漂移
+// 归一成一份面板内联样式,全部缺省时不写对应键,让静态 CSS 继续生效——默认值零漂移
 import type { CSSProperties } from 'vue'
 
-// 主题预设:一键整套配色,免得每个界面手拼 rgba;显式 background 优先于预设底色
-const THEME_PRESETS: Record<'dark' | 'light', { background: string; titleColor: string; contentColor: string }> = {
+// 原代码 - 保留(1.1.28 的预设只有三色;粉乳玻璃定稿为默认后,边框/分隔线/按钮色也需随明暗联动,扩成整套色板)
+// const THEME_PRESETS: Record<'dark' | 'light', { background: string; titleColor: string; contentColor: string }> = {
+//   dark: {
+//     background: 'rgba(22, 12, 18, 0.78)',
+//     titleColor: '#ff8fab',
+//     contentColor: 'rgba(255, 255, 255, 0.88)',
+//   },
+//   light: {
+//     background: 'rgba(255, 240, 245, 0.7)',
+//     titleColor: '#ff8fab',
+//     contentColor: '#4a3a40',
+//   },
+// }
+
+// 整套色板:底色/标题/内容/分隔线/边框/取消与确定按钮色——亮底暗字、暗底白字各自配好,不出现"白字白底"
+interface DialogPalette {
+  background: string
+  titleColor: string
+  contentColor: string
+  lineColor: string
+  borderColor: string
+  cancelColor: string
+  okColor: string
+}
+
+// 2026-11-05 定稿:默认即「粉乳玻璃」——半透奶粉底 + 深粉标题 + 深字(用户在配色对比里点的)
+const DEFAULT_PALETTE: DialogPalette = {
+  background: 'rgba(255, 190, 205, 0.45)',
+  titleColor: '#d94f7e',
+  contentColor: '#5f3a49',
+  lineColor: 'rgba(217, 79, 126, 0.3)',
+  borderColor: 'rgba(255, 126, 167, 0.55)',
+  cancelColor: 'rgba(90, 50, 70, 0.75)',
+  okColor: '#d94f7e',
+}
+
+const THEME_PRESETS: Record<'dark' | 'light', DialogPalette> = {
+  // 想要 1.1.27/1.1.28 的暗色玻璃,显式传 theme: 'dark'
   dark: {
     background: 'rgba(22, 12, 18, 0.78)',
     titleColor: '#ff8fab',
     contentColor: 'rgba(255, 255, 255, 0.88)',
+    lineColor: 'rgba(255, 183, 197, 0.22)',
+    borderColor: 'rgba(255, 183, 197, 0.45)',
+    cancelColor: 'rgba(255, 255, 255, 0.55)',
+    okColor: '#ff7eb9',
   },
   light: {
     background: 'rgba(255, 240, 245, 0.7)',
     titleColor: '#ff8fab',
     contentColor: '#4a3a40',
+    lineColor: 'rgba(255, 143, 171, 0.35)',
+    borderColor: 'rgba(255, 183, 197, 0.55)',
+    cancelColor: 'rgba(90, 50, 70, 0.75)',
+    okColor: '#d94f7e',
   },
 }
 
-// 边框归一:false→关;字符串→当颜色;对象→逐项配;返回 undefined 表示走 CSS 默认(细粉 1.5px)
-const resolveBorder = (): string | undefined => {
+// 生效色板:不传 theme 用默认粉乳,传了用预设;显式 background 只覆盖底色
+const palette = computed<DialogPalette>(() => (props.theme ? THEME_PRESETS[props.theme] : DEFAULT_PALETTE))
+
+// 边框归一:false→关;字符串→当颜色;对象→逐项配;返回 undefined 表示走 CSS 默认(色板细粉 1.5px)
+const resolveBorder = (defaultColor: string): string | undefined => {
   const b = props.border
   if (b === undefined) return undefined
   if (b === false) return 'none'
   const o = typeof b === 'string' ? { color: b } : b
-  return `${o.width ?? 1.5}px solid ${o.color ?? 'rgba(255, 183, 197, 0.45)'}`
+  return `${o.width ?? 1.5}px solid ${o.color ?? defaultColor}`
 }
 
 // 光晕归一:字符串→完整 CSS box-shadow 直传;对象→按色生成三层(近粉晕+中粉投影+外层黑压场),strength 缩放扩散
@@ -156,23 +208,23 @@ const resolveShadow = (): string | undefined => {
 }
 
 const panelStyle = computed<CSSProperties>(() => {
-  const preset = props.theme ? THEME_PRESETS[props.theme] : undefined
+  const p = palette.value
   const style: CSSProperties = {
     minWidth: props.width,
     minHeight: props.height,
     maxHeight: props.maxHeight,
-    // 优先级:显式 background > theme 预设 > 暗色玻璃兜底(与 1.1.27 默认完全一致)
-    background: props.background ?? preset?.background ?? 'rgba(22, 12, 18, 0.78)',
+    // 优先级:显式 background > theme 预设 > 粉乳玻璃默认(2026-11-05 定稿)
+    background: props.background ?? p.background,
   }
-  // 主题文字色走 CSS 变量下发,静态 CSS 里用 var() 兜底——不选主题时样式零变化
-  if (preset) {
-    style['--dlg-title'] = preset.titleColor
-    style['--dlg-content'] = preset.contentColor
-  }
+  // 色板颜色走 CSS 变量下发,静态 CSS 里用 var() 兜底(兜底值=粉乳默认,与这里同源)
+  style['--dlg-title'] = p.titleColor
+  style['--dlg-content'] = p.contentColor
+  style['--dlg-line'] = p.lineColor
+  style['--dlg-border'] = p.borderColor
   if (props.radius !== undefined) {
     style.borderRadius = typeof props.radius === 'number' ? `${props.radius}px` : props.radius
   }
-  const border = resolveBorder()
+  const border = resolveBorder(p.borderColor)
   if (border !== undefined) style.border = border
   const shadow = resolveShadow()
   if (shadow !== undefined) style.boxShadow = shadow
@@ -318,10 +370,11 @@ onUnmounted(() => {
   /* border-radius: 12px; // 稍微圆润一点更适合粉色主题 */
   border-radius: 0; // 2026-09 默认形态:直角,靠细边框成形
 
-  // ========start======== ✨ 核心重设计:暗色玻璃 + 1.5px 细粉边框 + 分层粉光晕
+  // ========start======== ✨ 核心重设计:玻璃面板 + 1.5px 细粉边框 + 分层粉光晕
   backdrop-filter: blur(18px) saturate(1.15);
   -webkit-backdrop-filter: blur(18px) saturate(1.15);
-  border: 1.5px solid rgba(255, 183, 197, 0.45);
+  // 边框色随色板走 var(默认粉乳的深粉;dark 预设回落旧浅粉)
+  border: 1.5px solid var(--dlg-border, rgba(255, 126, 167, 0.55));
   // 光晕三层递进:近处粉晕提亮边界,中层粉投影,外层纯黑压住壁纸——阴影必须带色调
   box-shadow:
     0 0 18px rgba(255, 126, 185, 0.15),
@@ -331,7 +384,8 @@ onUnmounted(() => {
   top: -99999px;
   /* 原代码 - 保留 */
   /* background: white; */
-  background: rgba(22, 12, 18, 0.78); // 暗色玻璃兜底(与默认 prop 同值,防闪烁)
+  /* background: rgba(22, 12, 18, 0.78); // 暗色玻璃兜底(与默认 prop 同值,防闪烁) */
+  background: rgba(255, 190, 205, 0.45); // 粉乳玻璃兜底(与 DEFAULT_PALETTE 同值,防闪烁)
   overflow: hidden;
   opacity: 0;
   // ========end========
@@ -343,12 +397,12 @@ onUnmounted(() => {
     /* color: #ff8fab; */
     padding: 14px 20px;
     font-weight: 600;
-    // ========start======== 主题文字色走 CSS 变量,panelStyle 下发;不选主题时回落到 1.1.27 原值
-    color: var(--dlg-title, #ff8fab);
+    // ========start======== 色板文字色走 CSS 变量,panelStyle 下发;兜底=粉乳默认深粉标题
+    color: var(--dlg-title, #d94f7e);
     // ========end========
     letter-spacing: 2px;
-    // ✨ 细粉分隔线:靠线成形,不再靠粗标题块撑场面
-    border-bottom: 1px solid rgba(255, 183, 197, 0.22);
+    // ✨ 细分隔线:靠线成形,不再靠粗标题块撑场面;色随色板(亮底深粉线,暗底浅粉线)
+    border-bottom: 1px solid var(--dlg-line, rgba(217, 79, 126, 0.3));
   }
 
   main {
@@ -359,9 +413,9 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     min-height: 0;
-    // ========start======== 暗底白字:内容文字不再吃宿主颜色,任何界面里都可见
-    // (2026-11-05 起 var() 兜底,theme 预设可换色,不选主题值不变)
-    color: var(--dlg-content, rgba(255, 255, 255, 0.88));
+    // ========start======== 内容文字色随色板,不再吃宿主颜色
+    // (粉乳默认深字 #5f3a49;theme 'dark' 回落白字 0.88)
+    color: var(--dlg-content, #5f3a49);
     // ========end========
   }
 
@@ -372,8 +426,8 @@ onUnmounted(() => {
     /* padding: 20px; */
     padding: 14px 20px;
     gap: 10px;
-    // ✨ 与 header 对称的细粉分隔线,按钮区自成一格
-    border-top: 1px solid rgba(255, 183, 197, 0.22);
+    // ✨ 与 header 对称的细分隔线,按钮区自成一格;色随色板
+    border-top: 1px solid var(--dlg-line, rgba(217, 79, 126, 0.3));
   }
 }
 

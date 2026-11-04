@@ -15,7 +15,7 @@ export interface MadokaDialogProps {
   radius?: number | string
   /** 边框:false 完全关闭;字符串=颜色(默认 1.5px);对象={ color, width } 逐项配;默认 1.5px 细粉边框 */
   border?: false | string | { color?: string; width?: number }
-  /** 主题预设:'dark' | 'light' 整套联动(底色+标题/内容文字色);显式 background 优先于预设底色 */
+  /** 主题预设:不传=粉乳玻璃默认(2026-11-05 定稿);'dark'=旧暗色玻璃,'light'=白樱亮底——整套联动(底色+文字+分隔线+边框+按钮色);显式 background 优先于预设底色 */
   theme?: 'dark' | 'light'
   /** 阴影光晕:false 或 'none' 关闭;字符串=完整 CSS box-shadow 值;对象={ color, strength } 按色生成三层光晕,strength(默认 1)缩放扩散半径;默认三层粉晕 */
   shadow?: false | string | { color?: string; strength?: number }
