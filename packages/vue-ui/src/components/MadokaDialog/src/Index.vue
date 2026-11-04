@@ -1,5 +1,14 @@
 <template>
-  <madoka-mask v-model="modelValue" v-if="!unuseModel">
+  <!-- 原代码 - 保留 -->
+  <!-- <madoka-mask v-model="modelValue" v-if="!unuseModel"> -->
+  <!-- ========start======== 遮罩透传:默认改低不透明度+轻 blur,壁纸柔化退后,弹层才"浮"得起来 -->
+  <madoka-mask
+    v-model="modelValue"
+    v-if="!unuseModel"
+    :mask-background="maskBackground"
+    :mask-blur="maskBlur"
+  >
+  <!-- ========end======== -->
     <div
       class="dialog__overlay"
       :style="{ minWidth: width, minHeight: height, maxHeight, background }"
@@ -16,6 +25,16 @@
       </main>
       <footer v-if="footer">
         <slot name="footer">
+          <!-- 原代码 - 保留 -->
+          <!-- <madoka-btn
+            type="3"
+            @click="Root.cancel"
+            v-if="!hiddenCancel"
+            :text="cancelText"
+            :disabled="okLoading"
+            variant="outlined"
+          /> -->
+          <!-- ========start======== 取消按钮降为灰白弱化色,确定保持热粉——主次分明,不再两个粉按钮打架 -->
           <madoka-btn
             type="3"
             @click="Root.cancel"
@@ -23,7 +42,9 @@
             :text="cancelText"
             :disabled="okLoading"
             variant="outlined"
+            color="rgba(255, 255, 255, 0.55)"
           />
+          <!-- ========end======== -->
           <!-- ========start======== 确定按钮 loading 态:旋转图标+禁用(useModal.confirm 异步 onOk 时驱动) -->
           <madoka-btn
             type="3"
@@ -76,7 +97,16 @@ const props = withDefaults(
     // Codex 新增开始
     unuseModel: false,
     // Codex 新增结束
-    background: 'rgba(255, 240, 245, 0.7)',
+    // 原代码 - 保留
+    // background: 'rgba(255, 240, 245, 0.7)',
+    // ========start========
+    // 2026-11 重设计:默认改暗色玻璃——桌面壁纸 overlay 上亮色玻璃块太突兀,
+    // 暗底配白字也把"Dark Dialog 内容文字不可见"从默认值层面根除;要亮底仍可传 background 覆盖
+    background: 'rgba(22, 12, 18, 0.78)',
+    // 遮罩同步降不透明度+轻 blur:壁画柔化退后,弹层才有"浮"起来的层次
+    maskBackground: 'rgba(0, 0, 0, 0.35)',
+    maskBlur: 6,
+    // ========end========
     hiddenCancel: false,
     okLoading: false,
   },
@@ -218,24 +248,38 @@ onUnmounted(() => {
   flex-direction: column;
   position: fixed;
   transform: scale(0.1);
-  border-radius: 12px; // 稍微圆润一点更适合粉色主题
+  /* 原代码 - 保留(圆角是旧版气质,默认形态定稿为直角) */
+  /* border-radius: 12px; // 稍微圆润一点更适合粉色主题 */
+  border-radius: 0; // 2026-09 默认形态:直角,靠细边框成形
 
-  // ✨ 核心增强：只添加毛玻璃和微光边框，不改动布局逻辑
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(255, 183, 197, 0.3);
+  // ========start======== ✨ 核心重设计:暗色玻璃 + 1.5px 细粉边框 + 分层粉光晕
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  border: 1.5px solid rgba(255, 183, 197, 0.45);
+  // 光晕三层递进:近处粉晕提亮边界,中层粉投影,外层纯黑压住壁纸——阴影必须带色调
+  box-shadow:
+    0 0 18px rgba(255, 126, 185, 0.15),
+    0 8px 32px rgba(255, 183, 197, 0.2),
+    0 24px 80px rgba(0, 0, 0, 0.45);
   left: -99999px;
   top: -99999px;
-  background: white;
+  /* 原代码 - 保留 */
+  /* background: white; */
+  background: rgba(22, 12, 18, 0.78); // 暗色玻璃兜底(与默认 prop 同值,防闪烁)
   overflow: hidden;
   opacity: 0;
+  // ========end========
 
   header {
-    padding: 20px;
-    // 增加一个粉色文字默认样式
-    font-weight: bold;
+    /* 原代码 - 保留 */
+    /* padding: 20px; */
+    /* font-weight: bold; */
+    padding: 14px 20px;
+    font-weight: 600;
     color: #ff8fab;
+    letter-spacing: 2px;
+    // ✨ 细粉分隔线:靠线成形,不再靠粗标题块撑场面
+    border-bottom: 1px solid rgba(255, 183, 197, 0.22);
   }
 
   main {
@@ -246,13 +290,20 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     min-height: 0;
+    // ========start======== 暗底白字:内容文字不再吃宿主颜色,任何界面里都可见
+    color: rgba(255, 255, 255, 0.88);
+    // ========end========
   }
 
   footer {
     display: flex;
     justify-content: end;
-    padding: 20px;
+    /* 原代码 - 保留 */
+    /* padding: 20px; */
+    padding: 14px 20px;
     gap: 10px;
+    // ✨ 与 header 对称的细粉分隔线,按钮区自成一格
+    border-top: 1px solid rgba(255, 183, 197, 0.22);
   }
 }
 
@@ -261,12 +312,18 @@ onUnmounted(() => {
   top: 50% !important;
   transform: translate(-50%, -50%) scale(1) !important;
   opacity: 1 !important;
-  transition: all 0.3s cubic-bezier(0.1, 1, 0.4, 1);
+  /* 原代码 - 保留 */
+  /* transition: all 0.3s cubic-bezier(0.1, 1, 0.4, 1); */
+  // 💫 弹跳曲线:从鼠标位置绽放开,像魔法发动
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .dialog__overlay.leave-active {
   opacity: 0 !important;
-  transition: all 0.3s cubic-bezier(0.1, 1, 0.4, 1);
+  /* 原代码 - 保留 */
+  /* transition: all 0.3s cubic-bezier(0.1, 1, 0.4, 1); */
+  // 💫 expo-out 收场:利落不拖沓
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 </style>
