@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.2.1
+
+### Patch Changes
+
+- MadokaFloatPanel 修复:拖出 WebView 边界时 (0,0) 假 pointermove 导致面板瞬移左上角(单帧 >200px 跳变丢弃 + buttons=0 兜底收摊);库按钮根元素是 span 不是 button,排除选择器补上 .madoka-btn-base(原先按最小化/停止/关闭也会触发拖动);胶囊拖动超过 4px 后松手不再当作点击展开;未布局完成(width=0)不冻结位置
+
 ## 1.2.0
 
 ### Minor Changes

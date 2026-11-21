@@ -11,8 +11,13 @@
       :style="panelStyle"
       @pointerdown="Panel.onDragStart"
     >
-      <!-- 最小化胶囊:点击恢复展开 -->
-      <div class="madoka-float-panel__mini" v-if="minimized" title="点击展开" @click="emit('update:minimized', false)">
+      <!-- 最小化胶囊:点击恢复展开;按住拖动超过阈值后松手不当作点击 -->
+      <div
+        class="madoka-float-panel__mini"
+        v-if="minimized"
+        title="点击展开"
+        @click="!Panel.dragMoved && emit('update:minimized', false)"
+      >
         <slot name="mini" />
       </div>
 
@@ -49,11 +54,12 @@ const Panel = (() => {
     onDragStart: (e: PointerEvent) => {
       if (!props.draggable) return
       const target = e.target as HTMLElement
-      // 交互元素上的指针事件不当作拖动
-      if (target.closest('button, a, input, textarea, select, [data-no-drag]')) return
+      // 交互元素上的指针事件不当作拖动(组件库按钮根元素是 span,必须按基类一并排除)
+      if (target.closest('button, a, input, textarea, select, [data-no-drag], .madoka-btn-base')) return
       const el = rootRef.value
       if (!el) return
       const rect = el.getBoundingClientRect()
+      if (rect.width === 0) return // 尚未布局完成,冻结了就是错的
       s.w = rect.width
       s.h = rect.height
       // 首次拖动:把 right/bottom 定位换算成 left/top,之后按增量移动
@@ -62,6 +68,9 @@ const Panel = (() => {
         s.top = rect.top
         s.dragged = true
       }
+      s.downX = e.clientX
+      s.downY = e.clientY
+      s.dragMoved = false
       s.lastX = e.clientX
       s.lastY = e.clientY
       el.setPointerCapture(e.pointerId)
@@ -70,10 +79,21 @@ const Panel = (() => {
       el.addEventListener('pointercancel', f.onDragEnd)
     },
     onDragMove: (e: PointerEvent) => {
+      // 按键已松(错过 up 事件的兜底):立即收摊,别拿着假事件继续拖
+      if (e.buttons === 0) {
+        f.onDragEnd(e)
+        return
+      }
       const dx = e.clientX - s.lastX
       const dy = e.clientY - s.lastY
+      // WebView2 里指针拖出 webview 边界(进入原生标题栏等)会派发坐标 (0,0) 的假 move,
+      // 单帧几百像素的跳变不可能是真实拖动,直接丢弃(否则面板瞬移到左上角)
+      if (Math.abs(dx) > 200 || Math.abs(dy) > 200) return
       s.lastX = e.clientX
       s.lastY = e.clientY
+      if (Math.abs(e.clientX - s.downX) + Math.abs(e.clientY - s.downY) > 4) {
+        s.dragMoved = true // 位移超过阈值算真拖过(胶囊松手不再当作点击展开)
+      }
       // 视口钳制:留 4px 在屏内,不会拖丢找不回
       s.left = Math.min(Math.max(4, s.left + dx), window.innerWidth - s.w - 4)
       s.top = Math.min(Math.max(4, s.top + dy), window.innerHeight - s.h - 4)
@@ -91,10 +111,13 @@ const Panel = (() => {
 
   const s = reactive({
     dragged: false,
+    dragMoved: false,
     left: 0,
     top: 0,
     w: 0,
     h: 0,
+    downX: 0,
+    downY: 0,
     lastX: 0,
     lastY: 0,
     ...f,
