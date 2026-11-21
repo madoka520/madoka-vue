@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.6.0
+
+### Minor Changes
+
+- MadokaSelect 新增 trigger 打开方式配置:'click'(默认,点击开合)|'hover'(悬停展开、离开 180ms 后自动收起,宽限期可跨过触发器与菜单间隙;hover 模式下点击仍可开合)
+
 ## 1.5.2
 
 ### Patch Changes

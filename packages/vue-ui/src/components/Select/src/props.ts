@@ -37,6 +37,9 @@ export interface MadokaSelectProps {
   /** ========start======== 无触发器模式:隐藏内置触发器,组件只渲染下拉菜单锚点,
    * 由消费方自画触发器经 ref 调 open/close/toggle 控制(菜单定位在锚点下方) */
   triggerless?: boolean
+  /** 打开方式:'click' 点击触发器打开(默认)| 'hover' 悬停打开、离开自动收起
+   * (离开有 180ms 宽限,跨过触发器与菜单的间隙不会误关);hover 模式下点击仍可开合 */
+  trigger?: 'click' | 'hover'
   // ========end========
 }
 // Codex 新增结束

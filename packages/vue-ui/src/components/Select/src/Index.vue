@@ -3,7 +3,17 @@
   <!-- <div class="madoka-select-wrapper" tabindex="-1" @blur="handleClickOutside"> -->
   <!-- <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click="toggleMenu"> -->
   <!-- Codex 新增开始 -->
-  <div ref="selectRef" class="madoka-select-wrapper" tabindex="-1" :style="cssVars">
+  <!-- ========start======== hover 打开模式:悬停展开、离开收起(180ms 宽限跨过菜单间隙),
+       事件挂 wrapper(menu 是 DOM 子节点,进菜单等于没离开) -->
+  <div
+    ref="selectRef"
+    class="madoka-select-wrapper"
+    tabindex="-1"
+    :style="cssVars"
+    @mouseenter="onHoverEnter"
+    @mouseleave="onHoverLeave"
+  >
+  <!-- ========end======== -->
     <!-- ========start======== 自定义触发器插槽:传入即替换内置触发器,点击自动开合,
          open 状态经作用域插槽下发(消费方做展开态高亮) -->
     <div v-if="$slots.trigger" class="madoka-select-custom-trigger" @click.stop="toggleMenu">
@@ -79,6 +89,7 @@ const props = withDefaults(
     triggerPrefixIcon: '',
     width: '200px',
     triggerless: false,
+    trigger: 'click',
     // ========end========
   },
 )
@@ -145,6 +156,33 @@ const selectedLabel = computed(() => {
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
 }
+
+// ========start======== hover 打开模式:悬停展开;离开 180ms 后收起(宽限期内回到
+// wrapper/菜单则取消收起,跨过触发器与菜单间 8px 间隙不会误关)
+let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
+
+const onHoverEnter = () => {
+  if (props.trigger !== 'hover') return
+  if (hoverCloseTimer) {
+    clearTimeout(hoverCloseTimer)
+    hoverCloseTimer = undefined
+  }
+  isOpen.value = true
+}
+
+const onHoverLeave = () => {
+  if (props.trigger !== 'hover') return
+  if (hoverCloseTimer) clearTimeout(hoverCloseTimer)
+  hoverCloseTimer = setTimeout(() => {
+    isOpen.value = false
+    hoverCloseTimer = undefined
+  }, 180)
+}
+
+onUnmounted(() => {
+  if (hoverCloseTimer) clearTimeout(hoverCloseTimer)
+})
+// ========end========
 
 // 原代码 - Codex 保留(单选:选中即关菜单)
 // const handleSelect = (item: MadokaOption) => {
