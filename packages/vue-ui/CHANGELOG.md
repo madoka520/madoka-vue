@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.4.1
+
+### Patch Changes
+
+- MadokaSelect 修复与新增:菜单宽度改为自适应内容(width:max-content,min-width:100%,上限 260px+省略号)——窄触发器下选项不再溢出;新增 triggerless 模式(隐藏内置触发器,消费方自画触发器经组件 ref 的 open/close/toggle 控制菜单,菜单锚定在组件锚点下方)
+
 ## 1.4.0
 
 ### Minor Changes

@@ -34,6 +34,9 @@ export interface MadokaSelectProps {
   triggerPrefixIcon?: string
   /** 组件宽度(任意 CSS 宽度值,含 'auto'),默认 '200px' */
   width?: string
+  /** ========start======== 无触发器模式:隐藏内置触发器,组件只渲染下拉菜单锚点,
+   * 由消费方自画触发器经 ref 调 open/close/toggle 控制(菜单定位在锚点下方) */
+  triggerless?: boolean
   // ========end========
 }
 // Codex 新增结束

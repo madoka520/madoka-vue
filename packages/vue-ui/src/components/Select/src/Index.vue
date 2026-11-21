@@ -4,7 +4,9 @@
   <!-- <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click="toggleMenu"> -->
   <!-- Codex 新增开始 -->
   <div ref="selectRef" class="madoka-select-wrapper" tabindex="-1" :style="cssVars">
-    <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu">
+    <!-- 原代码 - Codex 保留(始终渲染触发器)
+    <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu"> -->
+    <div v-if="!triggerless" class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu">
       <!-- Codex 新增结束 -->
       <!-- ========start======== 触发器:可选 mdi 前缀图标;占位文案可配(原写死"请选择") -->
       <i v-if="triggerPrefixIcon" :class="['mdi', triggerPrefixIcon, 'select-prefix-icon']" />
@@ -28,7 +30,8 @@
           @click.stop="handleSelect(item)"
         >
           <!-- Codex 新增结束 -->
-          {{ item[labelName] }}
+          <!-- ========start======== 文案收进 span,菜单自适应宽度时可省略号截断 -->
+          <span class="option-label">{{ item[labelName] }}</span>
           <span v-if="isSelected(item)" class="check-mark">✓</span>
         </li>
         <li v-if="options.length === 0" class="no-data">暂无数据</li>
@@ -70,6 +73,7 @@ const props = withDefaults(
     placeholder: '请选择',
     triggerPrefixIcon: '',
     width: '200px',
+    triggerless: false,
     // ========end========
   },
 )
@@ -192,6 +196,20 @@ onUnmounted(() => {
 defineOptions({
   name: 'MadokaSelect',
 })
+
+// ========start======== 无触发器模式:消费方自画触发器,经 ref 控制菜单开合
+defineExpose({
+  open: () => {
+    isOpen.value = true
+  },
+  close: () => {
+    isOpen.value = false
+  },
+  toggle: () => {
+    isOpen.value = !isOpen.value
+  },
+})
+// ========end========
 </script>
 
 
@@ -260,7 +278,12 @@ defineOptions({
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    width: 100%;
+    /* ========start======== 菜单宽度自适应内容:触发器很窄(图标触发/triggerless 锚点)时
+       选项不再溢出——max-content 量内容,min-width 保底不窄于触发器,上限截断省略号 */
+    width: max-content;
+    min-width: 100%;
+    max-width: 260px;
+    /* ========end======== */
     margin: 0;
     padding: 6px 0;
     list-style: none;
@@ -276,10 +299,17 @@ defineOptions({
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
       padding: 10px 12px;
       font-size: var(--select-font-size);
       color: var(--select-color);
       transition: background 0.2s;
+
+      .option-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
 
       &:hover {
         background-color: var(--select-hover-background);
@@ -294,6 +324,7 @@ defineOptions({
 
       .check-mark {
         font-size: 12px;
+        flex-shrink: 0;
       }
     }
 
