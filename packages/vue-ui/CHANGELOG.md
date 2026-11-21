@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.5.0
+
+### Minor Changes
+
+- MadokaSelect 新增 #trigger 自定义触发器插槽:传入即替换内置触发器,点击自动开合菜单,open 状态经作用域插槽下发(#trigger="{ open }" 可做展开态高亮);插槽容器 inline-flex 不 imposing 布局。triggerless + ref 控制方式保留
+
 ## 1.4.1
 
 ### Patch Changes

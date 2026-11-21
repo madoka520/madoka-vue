@@ -4,9 +4,14 @@
   <!-- <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click="toggleMenu"> -->
   <!-- Codex 新增开始 -->
   <div ref="selectRef" class="madoka-select-wrapper" tabindex="-1" :style="cssVars">
+    <!-- ========start======== 自定义触发器插槽:传入即替换内置触发器,点击自动开合,
+         open 状态经作用域插槽下发(消费方做展开态高亮) -->
+    <div v-if="$slots.trigger" class="madoka-select-custom-trigger" @click.stop="toggleMenu">
+      <slot name="trigger" :open="isOpen" />
+    </div>
     <!-- 原代码 - Codex 保留(始终渲染触发器)
     <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu"> -->
-    <div v-if="!triggerless" class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu">
+    <div v-else-if="!triggerless" class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu">
       <!-- Codex 新增结束 -->
       <!-- ========start======== 触发器:可选 mdi 前缀图标;占位文案可配(原写死"请选择") -->
       <i v-if="triggerPrefixIcon" :class="['mdi', triggerPrefixIcon, 'select-prefix-icon']" />
@@ -272,6 +277,12 @@ defineExpose({
         border-top-color: var(--select-active-border-color);
       }
     }
+  }
+
+  // ========start======== 自定义触发器插槽容器:不 imposing 布局,内容自定尺寸
+  .madoka-select-custom-trigger {
+    display: inline-flex;
+    align-items: center;
   }
 
   .madoka-options-menu {
