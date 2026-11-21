@@ -1,15 +1,22 @@
 <template>
   <!-- 通用悬浮面板:Teleport 到 body,展开卡与最小化胶囊两种形态。
-       按住即可拖动(Pointer Events,兼容触摸):首次拖动把 right/bottom 锚点布局
-       冻结为 left/top,移动量经视口钳制不会拖丢;按钮/输入框等交互元素不触发拖动 -->
+       拖动复用 v-madoka-move 指令(整个面板是手柄,交互元素由指令排除;假跳变/漏 up
+       也在指令内防护):首次拖动把 right/bottom 锚点布局冻结为 left/top,
+       移动量经视口钳制不会拖丢 -->
   <Teleport :to="teleport">
     <div
       ref="rootRef"
       v-if="visible"
+      v-madoka-move="{
+        enabled: () => draggable,
+        handle: null,
+        onStart: Panel.onDragStart,
+        onMove: Panel.onDragMove,
+        onEnd: Panel.onDragEnd,
+      }"
       class="madoka-float-panel"
       :class="{ 'is-dragged': Panel.dragged }"
       :style="panelStyle"
-      @pointerdown="Panel.onDragStart"
     >
       <!-- 最小化胶囊:点击恢复展开;按住拖动超过阈值后松手不当作点击 -->
       <div
@@ -30,8 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import { madokaMoveDirective } from '../../../directives/move'
 import type { MadokaFloatPanelEmits, MadokaFloatPanelProps } from './types'
+
+// 拖动走 v-madoka-move 指令(局部注册)
+const vMadokaMove = madokaMoveDirective
 
 const minimized = defineModel<boolean>('minimized', { default: false })
 
@@ -51,61 +62,28 @@ const rootRef = ref<HTMLElement | null>(null)
 const Panel = (() => {
   const f = {
     // ===== 同步方法 =====
-    onDragStart: (e: PointerEvent) => {
-      if (!props.draggable) return
-      const target = e.target as HTMLElement
-      // 交互元素上的指针事件不当作拖动(组件库按钮根元素是 span,必须按基类一并排除)
-      if (target.closest('button, a, input, textarea, select, [data-no-drag], .madoka-btn-base')) return
+    // 拖动开始(指令回调):把 right/bottom 锚点布局冻结为 left/top,之后按增量移动
+    onDragStart: () => {
       const el = rootRef.value
       if (!el) return
       const rect = el.getBoundingClientRect()
       if (rect.width === 0) return // 尚未布局完成,冻结了就是错的
       s.w = rect.width
       s.h = rect.height
-      // 首次拖动:把 right/bottom 定位换算成 left/top,之后按增量移动
       if (!s.dragged) {
         s.left = rect.left
         s.top = rect.top
         s.dragged = true
       }
-      s.downX = e.clientX
-      s.downY = e.clientY
-      s.dragMoved = false
-      s.lastX = e.clientX
-      s.lastY = e.clientY
-      el.setPointerCapture(e.pointerId)
-      el.addEventListener('pointermove', f.onDragMove)
-      el.addEventListener('pointerup', f.onDragEnd)
-      el.addEventListener('pointercancel', f.onDragEnd)
     },
-    onDragMove: (e: PointerEvent) => {
-      // 按键已松(错过 up 事件的兜底):立即收摊,别拿着假事件继续拖
-      if (e.buttons === 0) {
-        f.onDragEnd(e)
-        return
-      }
-      const dx = e.clientX - s.lastX
-      const dy = e.clientY - s.lastY
-      // WebView2 里指针拖出 webview 边界(进入原生标题栏等)会派发坐标 (0,0) 的假 move,
-      // 单帧几百像素的跳变不可能是真实拖动,直接丢弃(否则面板瞬移到左上角)
-      if (Math.abs(dx) > 200 || Math.abs(dy) > 200) return
-      s.lastX = e.clientX
-      s.lastY = e.clientY
-      if (Math.abs(e.clientX - s.downX) + Math.abs(e.clientY - s.downY) > 4) {
-        s.dragMoved = true // 位移超过阈值算真拖过(胶囊松手不再当作点击展开)
-      }
-      // 视口钳制:留 4px 在屏内,不会拖丢找不回
+    // 每帧增量(指令已过滤假跳变):视口钳制,留 4px 在屏内不会拖丢
+    onDragMove: (dx: number, dy: number) => {
       s.left = Math.min(Math.max(4, s.left + dx), window.innerWidth - s.w - 4)
       s.top = Math.min(Math.max(4, s.top + dy), window.innerHeight - s.h - 4)
     },
-    onDragEnd: (e: PointerEvent) => {
-      const el = rootRef.value
-      if (el?.hasPointerCapture?.(e.pointerId)) {
-        el.releasePointerCapture(e.pointerId)
-      }
-      el?.removeEventListener('pointermove', f.onDragMove)
-      el?.removeEventListener('pointerup', f.onDragEnd)
-      el?.removeEventListener('pointercancel', f.onDragEnd)
+    // 拖动结束:moved=真拖过(胶囊据此抑制误展开)
+    onDragEnd: (moved: boolean) => {
+      s.dragMoved = moved
     },
   }
 
@@ -116,10 +94,6 @@ const Panel = (() => {
     top: 0,
     w: 0,
     h: 0,
-    downX: 0,
-    downY: 0,
-    lastX: 0,
-    lastY: 0,
     ...f,
   })
 
@@ -142,10 +116,6 @@ const cardStyle = computed(() => ({
   width: props.width,
   background: props.background,
 }))
-
-onBeforeUnmount(() => {
-  Panel.onDragEnd({ pointerId: -1 } as PointerEvent)
-})
 </script>
 
 <style scoped lang="less">

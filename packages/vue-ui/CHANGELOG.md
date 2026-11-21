@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.3.0
+
+### Minor Changes
+
+- madokaMoveDirective 升级为通用拖拽能力:Pointer Events + 指针捕获(兼容触摸),handle 可配置(默认仍 '.overlay-header',null=整个元素作手柄),exclude 排除命中交互元素的按下(默认清单含组件库按钮基类),新增 onStart/onEnd(moved) 回调;内置防护——WebView2 拖出边界时 (0,0) 假 pointermove 丢弃(单帧 >200px 跳变)、buttons=0 漏 up 兜底。MadokaFloatPanel 内部拖拽实现删除,改用该指令
+
 ## 1.2.1
 
 ### Patch Changes
