@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { madokaMoveDirective } from '../../../directives/move'
+import madokaMoveDirective from '../../../directives/move'
 import type { MadokaFloatPanelEmits, MadokaFloatPanelProps } from './types'
 
 // 拖动走 v-madoka-move 指令(局部注册)
