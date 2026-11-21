@@ -104,7 +104,7 @@ const selectRef = useTemplateRef<HTMLElement>('selectRef')
 // ========start======== 多选:值按数组对待;单选按单值(旧用法不变)
 const selectedValues = computed<MadokaOptionValue[]>(() => {
   if (props.multiple) {
-    return Array.isArray(modelValue.value) ? [...modelValue.value] : []
+    return Array.isArray(modelValue.value) ? modelValue.value.slice() : []
   }
   return modelValue.value === undefined || modelValue.value === null || modelValue.value === '' ? [] : [modelValue.value]
 })
