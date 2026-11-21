@@ -25,6 +25,9 @@ export { default as MadokaTab } from './components/MadokaTab/src/Index.vue'
 // Codex 新增开始
 export { default as MadokaTagGroup } from './components/MadokaTagGroup/src/Index.vue'
 // Codex 新增结束
+// Codex 新增开始
+export { default as MadokaFloatPanel } from './components/MadokaFloatPanel/src/Index.vue'
+// Codex 新增结束
 export type {
   MadokaInputValue,
   MadokaOption,
@@ -83,4 +86,7 @@ export type { MadokaModalConfirmOptions } from './components/useModal'
 export type { Variant as MadokaButtonVariant } from './components/button/src/button'
 // Codex 新增开始
 export type { MadokaTagGroupProps, MadokaTagItem } from './components/MadokaTagGroup/src/props'
+// Codex 新增结束
+// Codex 新增开始
+export type { MadokaFloatPanelEmits, MadokaFloatPanelProps } from './components/MadokaFloatPanel/src/types'
 // Codex 新增结束

@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.2.0
+
+### Minor Changes
+
+- 新增 MadokaFloatPanel 通用悬浮面板:右下角悬浮(未拖动时贴角,窗口缩放自适应),展开卡/最小化胶囊双形态(v-model:minimized),Pointer Events 拖动(兼容触摸,视口钳制防拖丢,button/a/input 等交互元素不触发),卡片与胶囊的暗色玻璃外观内置,内容经默认插槽与 mini 插槽自定义
+
 ## 1.1.25
 
 ### Patch Changes
