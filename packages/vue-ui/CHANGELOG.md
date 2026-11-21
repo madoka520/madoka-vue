@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.4.0
+
+### Minor Changes
+
+- MadokaSelect 新增多选与触发器配置:multiple(值为数组,菜单内勾选/取消且不自动关闭,触发器最多展示两项、更多折成 +N)、placeholder(占位文案,原写死"请选择")、triggerPrefixIcon(触发器 mdi 前缀图标)、width(宽度可配,原固定 200px)。默认行为与旧版完全一致
+
 ## 1.3.0
 
 ### Minor Changes

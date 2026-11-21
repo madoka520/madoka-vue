@@ -25,5 +25,15 @@ export interface MadokaSelectProps {
   hoverBackground?: string
   /** 菜单条目悬停/选中文字色,默认 #ffb7d5 */
   hoverColor?: string
+  // ========start======== 多选模式(标签筛选条「更多」等场景):
+  // 值为数组,点选在菜单里勾选/取消,菜单不自动关;默认 false 保持单选行为
+  multiple?: boolean
+  /** 未选中时触发器文案,默认 '请选择' */
+  placeholder?: string
+  /** 触发器前缀图标(mdi 类名),如 'mdi-dots-horizontal' */
+  triggerPrefixIcon?: string
+  /** 组件宽度(任意 CSS 宽度值,含 'auto'),默认 '200px' */
+  width?: string
+  // ========end========
 }
 // Codex 新增结束

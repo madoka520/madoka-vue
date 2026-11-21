@@ -6,8 +6,12 @@
   <div ref="selectRef" class="madoka-select-wrapper" tabindex="-1" :style="cssVars">
     <div class="madoka-select-input" :class="{ 'is-active': isOpen }" @click.stop="toggleMenu">
       <!-- Codex 新增结束 -->
+      <!-- ========start======== 触发器:可选 mdi 前缀图标;占位文案可配(原写死"请选择") -->
+      <i v-if="triggerPrefixIcon" :class="['mdi', triggerPrefixIcon, 'select-prefix-icon']" />
       <span class="selected-label">
-        {{ selectedLabel || '请选择' }}
+        <!-- 原代码 - Codex 保留
+        {{ selectedLabel || '请选择' }} -->
+        {{ selectedLabel || placeholder }}
       </span>
       <span class="select-arrow" :class="{ 'is-reverse': isOpen }"></span>
     </div>
@@ -16,17 +20,16 @@
       <ul v-show="isOpen" class="madoka-options-menu">
         <!-- 原代码 - Codex 保留 -->
         <!-- <li v-for="item in options" :key="String(item[valueName])" class="madoka-option-item" :class="{ 'is-selected': modelValue === item[valueName] }" @click="handleSelect(item)"> -->
-        <!-- Codex 新增开始 -->
         <li
           v-for="item in options"
           :key="String(item[valueName])"
           class="madoka-option-item"
-          :class="{ 'is-selected': modelValue === item[valueName] }"
+          :class="{ 'is-selected': isSelected(item) }"
           @click.stop="handleSelect(item)"
         >
           <!-- Codex 新增结束 -->
           {{ item[labelName] }}
-          <span v-if="modelValue === item[valueName]" class="check-mark">✓</span>
+          <span v-if="isSelected(item)" class="check-mark">✓</span>
         </li>
         <li v-if="options.length === 0" class="no-data">暂无数据</li>
       </ul>
@@ -62,6 +65,12 @@ const props = withDefaults(
     menuBackground: '#fff',
     hoverBackground: '#fff5f8',
     hoverColor: '#ffb7d5',
+    // ========start======== 多选/占位/前缀图标/宽度
+    multiple: false,
+    placeholder: '请选择',
+    triggerPrefixIcon: '',
+    width: '200px',
+    // ========end========
   },
 )
 
@@ -78,10 +87,11 @@ const cssVars = computed(() => ({
   '--select-menu-background': props.menuBackground,
   '--select-hover-background': props.hoverBackground,
   '--select-hover-color': props.hoverColor,
+  '--select-width': props.width,
 }))
 // Codex 新增结束
 
-const modelValue = defineModel<MadokaOptionValue>({
+const modelValue = defineModel<MadokaOptionValue | MadokaOptionValue[]>({
   default: '',
 })
 
@@ -91,17 +101,60 @@ const isOpen = ref(false)
 const selectRef = useTemplateRef<HTMLElement>('selectRef')
 // Codex 新增结束
 
+// ========start======== 多选:值按数组对待;单选按单值(旧用法不变)
+const selectedValues = computed<MadokaOptionValue[]>(() => {
+  if (props.multiple) {
+    return Array.isArray(modelValue.value) ? [...modelValue.value] : []
+  }
+  return modelValue.value === undefined || modelValue.value === null || modelValue.value === '' ? [] : [modelValue.value]
+})
+
+const isSelected = (item: MadokaOption) => selectedValues.value.includes(item[props.valueName] as MadokaOptionValue)
+// ========end========
+
 // 获取当前显示的 label
+// 原代码 - Codex 保留(单值查找)
+// const selectedLabel = computed(() => {
+//   const target = props.options.find((opt) => opt[props.valueName] === modelValue.value)
+//   return target ? String(target[props.labelName] ?? '') : ''
+// })
 const selectedLabel = computed(() => {
-  const target = props.options.find((opt) => opt[props.valueName] === modelValue.value)
-  return target ? String(target[props.labelName] ?? '') : ''
+  const labels = selectedValues.value
+    .map((v) => {
+      const target = props.options.find((opt) => opt[props.valueName] === v)
+      return target ? String(target[props.labelName] ?? '') : ''
+    })
+    .filter(Boolean)
+  if (!labels.length) return ''
+  if (!props.multiple) return labels[0] ?? ''
+  // 多选触发器:最多展示两项,更多折成 +N
+  const head = labels.slice(0, 2).join('、')
+  return labels.length > 2 ? `${head} +${labels.length - 2}` : head
 })
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
 }
 
+// 原代码 - Codex 保留(单选:选中即关菜单)
+// const handleSelect = (item: MadokaOption) => {
+//   modelValue.value = item[props.valueName] as MadokaOptionValue
+//   isOpen.value = false
+// }
 const handleSelect = (item: MadokaOption) => {
+  if (props.multiple) {
+    // 多选:菜单里勾选/取消,菜单保持打开便于连续选择
+    const cur = selectedValues.value
+    const v = item[props.valueName] as MadokaOptionValue
+    const i = cur.indexOf(v)
+    if (i >= 0) {
+      cur.splice(i, 1)
+    } else {
+      cur.push(v)
+    }
+    modelValue.value = cur
+    return
+  }
   modelValue.value = item[props.valueName] as MadokaOptionValue
   isOpen.value = false
 }
@@ -147,7 +200,7 @@ defineOptions({
 // 菜单背景配半透明色时自动获得毛玻璃(backdrop-filter 对不透明背景无视觉影响)
 .madoka-select-wrapper {
   position: relative;
-  width: 200px;
+  width: var(--select-width);
   user-select: none;
   font-family: sans-serif;
 
@@ -161,6 +214,13 @@ defineOptions({
     border: var(--select-border-width) solid var(--select-border-color);
     border-radius: var(--select-radius);
     transition: all 0.3s ease;
+
+    // 触发器前缀图标(mdi)
+    .select-prefix-icon {
+      font-size: calc(var(--select-font-size) + 2px);
+      color: var(--select-hover-color);
+      flex-shrink: 0;
+    }
 
     &:hover {
       border-color: var(--select-active-border-color);
