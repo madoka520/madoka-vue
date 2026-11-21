@@ -1,5 +1,11 @@
 # @madoka520/vue-ui
 
+## 1.5.2
+
+### Patch Changes
+
+- MadokaSelect wrapper 不再强制 font-family: sans-serif(改为继承,嵌入消费方布局/自定义触发器插槽时与周围字体一致)
+
 ## 1.5.0
 
 ### Minor Changes

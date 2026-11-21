@@ -226,7 +226,8 @@ defineExpose({
   position: relative;
   width: var(--select-width);
   user-select: none;
-  font-family: sans-serif;
+  // 原代码 - Codex 保留(强制 sans-serif,嵌进消费方布局时与周围字体不一致,改为继承)
+  // font-family: sans-serif;
 
   .madoka-select-input {
     display: flex;
